@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Body Composition Strategist SimLab</title>
+<style>
+  :root{
+    --olive:#4f5f39;
+    --olive-dark:#334025;
+    --sage:#dfe7d4;
+    --terracotta:#a64f37;
+    --terracotta-dark:#7d3827;
+    --sand:#ead7b7;
+    --cream:#fbf7ef;
+    --paper:#fffdf8;
+    --charcoal:#2f2b27;
+    --muted:#625a52;
+    --gold:#a86f12;
+    --blue:#315d68;
+    --danger:#9d2f2f;
+    --good:#356a37;
+    --border:#c9bba7;
+    --shadow:0 8px 24px rgba(57,45,31,.12);
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    font-family:Arial, Helvetica, sans-serif;
+    color:var(--charcoal);
+    background:linear-gradient(180deg,#f7f1e6 0%,#efe4d3 100%);
+    line-height:1.55;
+  }
+  button,input,textarea{font:inherit}
+  button{cursor:pointer}
+  button:focus-visible,input:focus-visible,textarea:focus-visible{
+    outline:4px solid #1f6ea8;
+    outline-offset:3px;
+  }
+  a{color:#244f59}
+
+  header{
+    background:var(--olive-dark);
+    color:#fff;
+    border-bottom:6px solid var(--terracotta);
+  }
+  header .wrap{
+    max-width:1180px;
+    margin:auto;
+    padding:1rem 1.25rem;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:1rem;
+  }
+  .brand{display:flex;align-items:center;gap:.9rem}
+  .brand-mark{
+    width:54px;height:54px;border-radius:50%;
+    display:grid;place-items:center;
+    background:var(--sand);color:var(--olive-dark);
+    font-weight:900;letter-spacing:.03em;
+    border:3px solid #fff;
+  }
+  .brand h1{font-size:1.25rem;margin:0}
+  .brand div:last-child div{font-size:.95rem;color:#f5ead8}
+  #simIdHeader{font-weight:700;font-size:.9rem;text-align:right}
+
+  .container{max-width:1180px;margin:0 auto;padding:1.25rem}
+  .screen{display:none}
+  .screen.active{display:block}
+  .panel{
+    background:var(--paper);
+    border:1px solid var(--border);
+    border-radius:18px;
+    box-shadow:var(--shadow);
+    padding:1.25rem;
+    margin-bottom:1.1rem;
+  }
+  h2,h3,h4{line-height:1.2;color:var(--olive-dark)}
+  h2{font-size:clamp(1.65rem,3vw,2.35rem);margin-top:0}
+  h3{font-size:1.25rem}
+  p{max-width:82ch}
+  .small{font-size:.9rem;color:var(--muted)}
+  .label{display:block;font-size:.78rem;text-transform:uppercase;letter-spacing:.045em;color:var(--muted);font-weight:800}
+  .value{display:block;font-weight:800;margin-top:.18rem}
+
+  .hero{
+    display:grid;
+    grid-template-columns:1.25fr .75fr;
+    gap:1.25rem;
+    align-items:center;
+    min-height:330px;
+  }
+  .hero-art{
+    min-height:275px;
+    background:linear-gradient(145deg,var(--sage),#f1e6d3);
+    border:1px solid var(--border);
+    border-radius:18px;
+    position:relative;
+    overflow:hidden;
+    display:grid;
+    place-items:center;
+    padding:1rem;
+  }
+  .composition-graphic{
+    width:245px;height:245px;border-radius:50%;
+    background:conic-gradient(var(--olive) 0 44%,var(--terracotta) 44% 70%,var(--sand) 70% 100%);
+    border:10px solid #fff;
+    box-shadow:0 10px 26px rgba(55,45,35,.18);
+    position:relative;
+  }
+  .composition-graphic::after{
+    content:"BODY\A COMPOSITION";
+    white-space:pre;
+    position:absolute;inset:47px;
+    border-radius:50%;background:var(--paper);
+    display:grid;place-items:center;text-align:center;
+    font-weight:900;color:var(--olive-dark);letter-spacing:.04em;
+    border:1px solid var(--border);
+  }
+  .graphic-key{
+    position:absolute;bottom:12px;left:12px;right:12px;
+    display:flex;justify-content:center;gap:.8rem;flex-wrap:wrap;
+    font-size:.78rem;font-weight:800;color:var(--olive-dark)
+  }
+  .key-dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:.25rem;vertical-align:-1px}
+
+  .notice{
+    background:#f6efe4;
+    border-left:6px solid var(--gold);
+    padding:.9rem 1rem;
+    border-radius:10px;
+    margin:.9rem 0;
+  }
+  .safety-note{
+    background:#fff1ef;
+    border-left:6px solid var(--danger);
+    padding:.9rem 1rem;
+    border-radius:10px;
+    margin:.9rem 0;
+  }
+  .criteria-grid,.subgrid{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:.8rem;
+    margin-top:1rem;
+  }
+  .subgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .criteria-card,.mini{
+    background:var(--cream);
+    border:1px solid var(--border);
+    border-radius:13px;
+    padding:1rem;
+  }
+  .criteria-card h3,.mini h3,.mini h4{margin:.1rem 0 .55rem}
+
+  .button-row{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1rem}
+  .btn-primary,.btn-secondary,.btn-light{
+    border-radius:10px;
+    padding:.72rem 1rem;
+    font-weight:800;
+    border:2px solid transparent;
+  }
+  .btn-primary{background:var(--terracotta);color:#fff}
+  .btn-primary:hover{background:var(--terracotta-dark)}
+  .btn-secondary{background:var(--olive);color:#fff}
+  .btn-secondary:hover{background:var(--olive-dark)}
+  .btn-light{background:#fff;color:var(--olive-dark);border-color:var(--olive)}
+  .btn-light:hover{background:var(--sage)}
+  .btn-disabled{opacity:.55;cursor:not-allowed}
+
+  .profile-grid{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:.8rem;
+  }
+  .profile-item{
+    background:var(--cream);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:.9rem;
+  }
+  .case-lead{
+    border:2px solid var(--olive);
+    border-radius:14px;
+    padding:1rem;
+    background:#f2f6ed;
+    margin:1rem 0;
+  }
+  .energy-strip{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:.7rem;
+    margin-top:1rem;
+  }
+  .energy-card{background:#fff;border:1px solid var(--border);border-radius:11px;padding:.8rem}
+
+  .progress{
+    width:100%;height:13px;background:#e4ded4;border-radius:999px;overflow:hidden;
+    border:1px solid #b8aa98;margin:.65rem 0 1rem;
+  }
+  #progressBar{height:100%;background:var(--terracotta);width:0;transition:width .3s ease}
+  .step-score{font-weight:800;color:var(--olive-dark)}
+
+  .choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+  .choice-card{
+    width:100%;text-align:left;background:#fff;
+    border:2px solid var(--border);border-radius:15px;padding:1rem;
+    color:var(--charcoal);min-height:150px;
+    transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease;
+  }
+  .choice-card:hover:not(:disabled){transform:translateY(-3px);border-color:var(--terracotta);box-shadow:0 8px 18px rgba(70,51,37,.14)}
+  .choice-card.selected{border-color:var(--olive-dark);background:#eff4e9;box-shadow:0 0 0 3px rgba(79,95,57,.18)}
+  .choice-card.partial-selected{border-color:var(--gold);background:#fff8e8;box-shadow:0 0 0 3px rgba(168,111,18,.16)}
+  .choice-card.wrong-selected{border-color:var(--danger);background:#fff3f0}
+  .choice-card:disabled{cursor:default;opacity:.94}
+  .choice-title{font-size:1.04rem;font-weight:900;color:var(--olive-dark);display:flex;gap:.5rem;align-items:flex-start}
+  .choice-desc{margin:.55rem 0;color:#4d4741}
+  .choice-meta{display:inline-block;background:#f1e6d4;border-radius:999px;padding:.28rem .55rem;font-size:.78rem;font-weight:800}
+
+  .feedback{
+    display:none;margin-top:1rem;padding:1rem;border-radius:12px;border-left:7px solid var(--olive);
+    background:#eef4e9;
+  }
+  .feedback.show{display:block}
+  .feedback.partial{background:#fff8e8;border-left-color:var(--gold)}
+  .feedback.incorrect{background:#fff1ef;border-left-color:var(--danger)}
+  .feedback h3{margin:.1rem 0 .4rem}
+
+  .update-grid,.report-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:.85rem;
+  }
+  .metric-card,.score-card{
+    background:var(--cream);border:1px solid var(--border);border-radius:12px;padding:1rem;
+  }
+  .metric-values{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;margin-top:.4rem;font-weight:900}
+  .metric-before{color:var(--muted)}
+  .metric-after{color:var(--olive-dark)}
+  .arrow{color:var(--terracotta);font-size:1.2rem}
+  .change-good{color:var(--good)}
+  .change-watch{color:var(--danger)}
+  .change-neutral{color:var(--muted)}
+
+  .indicator-grid{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:.75rem;
+    margin-top:1rem;
+  }
+  .meter-card{
+    border:1px solid var(--border);background:var(--cream);border-radius:13px;padding:.8rem;min-height:120px;
+  }
+  .meter-card strong{display:block;min-height:2.4em;color:var(--olive-dark)}
+  .meter-track{width:100%;height:12px;background:#e2dacf;border-radius:999px;overflow:hidden;border:1px solid #b9ab98;margin:.5rem 0}
+  .meter-fill{height:100%;background:var(--olive)}
+  .meter-number{font-size:.88rem;font-weight:800}
+  .meter-status{font-size:.78rem;color:var(--muted);margin-top:.25rem}
+
+  .timeline{display:grid;gap:.75rem}
+  .timeline-item{border-left:6px solid var(--terracotta);background:var(--cream);padding:.8rem 1rem;border-radius:9px}
+  .timeline-item.correct{border-left-color:var(--good)}
+  .timeline-item.partial{border-left-color:var(--gold)}
+  .timeline-item.incorrect{border-left-color:var(--danger)}
+
+  table{border-collapse:collapse;width:100%;margin-top:.8rem}
+  th,td{border:1px solid #a99986;padding:.65rem;text-align:left;vertical-align:top}
+  th{background:var(--olive-dark);color:#fff}
+  tr:nth-child(even) td{background:#faf4e9}
+
+  textarea,input[type="text"]{
+    width:100%;border:1px solid #81786f;border-radius:10px;padding:.75rem;background:#fff;color:var(--charcoal)
+  }
+  textarea{min-height:180px;resize:vertical}
+  input[type="text"]{min-height:46px}
+  .response-block{margin-top:1.2rem}
+  .word-ok{color:var(--good);font-weight:800}
+  .word-watch{color:var(--danger);font-weight:800}
+  .error{display:none;color:var(--danger);font-weight:800;margin-top:.35rem}
+  .error.show{display:block}
+
+  .sr-only{
+    position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;
+    overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;
+  }
+
+  @media (max-width:980px){
+    .profile-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .energy-strip{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .indicator-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+  @media (max-width:760px){
+    header .wrap{align-items:flex-start;flex-direction:column}
+    #simIdHeader{text-align:left}
+    .hero{grid-template-columns:1fr}
+    .choice-grid,.report-grid,.update-grid,.criteria-grid,.subgrid{grid-template-columns:1fr}
+  }
+  @media (max-width:520px){
+    .indicator-grid,.profile-grid,.energy-strip{grid-template-columns:1fr}
+    .container{padding:.75rem}
+    .panel{padding:1rem}
+  }
+
+  @media print{
+    body{background:#fff;font-size:10.2pt}
+    header,.no-print,#startScreen,#caseScreen,#simulationScreen{display:none!important}
+    body.printing #reportScreen,
+    body.printing #reflectionScreen{display:block!important}
+    .container{max-width:none;margin:0;padding:0}
+    .panel{box-shadow:none;border:1px solid #999;break-inside:avoid;margin:.35rem 0;padding:.7rem}
+    .profile-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:.35rem}
+    .report-grid,.update-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:.4rem}
+    .indicator-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:.35rem}
+    .timeline-item{break-inside:avoid}
+    #reflectionScreen{break-before:page;page-break-before:always}
+    textarea{border:1px solid #777;min-height:130px}
+    table{font-size:9.5pt}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">VS</div>
+      <div>
+        <h1>Valencia Nutrition SimLab</h1>
+        <div>Body Composition Strategist: Beyond the Scale</div>
+      </div>
+    </div>
+    <div id="simIdHeader" aria-live="polite"></div>
+  </div>
+</header>
+
+<main class="container">
+  <section id="startScreen" class="screen active" aria-labelledby="startTitle">
+    <div class="panel hero">
+      <div>
+        <h2 id="startTitle">Build a plan that improves health, not just a number on the scale.</h2>
+        <p>You will manage a randomized fictional client through six checkpoints. You will interpret body-composition evidence, choose a realistic goal, build a nutrition and movement strategy, and respond to an eight-week progress update. Several choices may be defensible, so you must select the option that best fits the complete case.</p>
+        <div class="notice"><strong>Your goal is not always weight loss.</strong> A strong strategy may preserve muscle, reduce waist circumference, improve body-fat percentage, support recovery, or identify when weight-management coaching should stop and a healthcare referral is needed.</div>
+        <div class="button-row">
+          <button class="btn-primary" id="startBtn">Start Random Case</button>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="composition-graphic"></div>
+        <div class="graphic-key">
+          <span><span class="key-dot" style="background:var(--olive)"></span>Lean tissue</span>
+          <span><span class="key-dot" style="background:var(--terracotta)"></span>Fat tissue</span>
+          <span><span class="key-dot" style="background:var(--sand)"></span>Water, bone, organs</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="criteria-grid">
+      <div class="criteria-card">
+        <h3>Purpose</h3>
+        <p>Use energy-balance and body-composition concepts to distinguish meaningful health changes from scale-only thinking.</p>
+      </div>
+      <div class="criteria-card">
+        <h3>Task</h3>
+        <p>Complete six case-specific checkpoints, review the simulated progress data, and answer two short evidence-based questions.</p>
+      </div>
+      <div class="criteria-card">
+        <h3>Criteria</h3>
+        <p>Use the assigned client, exact before-and-after values, course concepts, and realistic predictions written in your own thoughts and words.</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Instructions</h3>
+      <ol>
+        <li>Review the randomized client and the teaching estimates provided.</li>
+        <li>Complete all six checkpoints. Each checkpoint is worth up to <strong>2 points</strong>: 2 points for the strongest case-supported choice, 1 point for a reasonable but incomplete choice, and 0 points for a choice that does not adequately address the evidence.</li>
+        <li>Use the feedback and the eight-week update to track weight, waist circumference, body-fat percentage, lean tissue, satiety, recovery, sustainability, and health-risk direction.</li>
+        <li>Answer both short-response questions on the final page.</li>
+        <li>Select <strong>Save Completed Report as PDF</strong>, save the PDF to your desktop, and upload it to the Canvas assignment.</li>
+      </ol>
+      <p class="small"><strong>Important:</strong> All people and outcomes in this activity are fictional. Values are simplified for learning and are not medical advice, a diagnosis, or an individualized calorie prescription.</p>
+    </div>
+  </section>
+
+  <section id="caseScreen" class="screen" aria-labelledby="caseTitle">
+    <div class="panel">
+      <span class="label">Randomized Client File</span>
+      <h2 id="caseTitle">Meet Your Client</h2>
+      <div id="caseLead" class="case-lead"></div>
+      <div id="profileContent" class="profile-grid"></div>
+      <h3>Energy-Expenditure Context</h3>
+      <div id="energyStrip" class="energy-strip"></div>
+      <div class="notice"><strong>Teaching estimate:</strong> BMR is the largest part of daily energy expenditure for most adults. Structured exercise and everyday movement are the components people can usually change most directly.</div>
+      <div class="button-row">
+        <button class="btn-light" id="newCaseBtn">Generate a Different Client</button>
+        <button class="btn-primary" id="beginBtn">Begin Checkpoint 1</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="simulationScreen" class="screen" aria-labelledby="checkpointTitle">
+    <div class="panel">
+      <div class="label">Checkpoint <span id="stepNumber">1</span> of 6 · <span class="step-score">2 points</span></div>
+      <h2 id="checkpointTitle"></h2>
+      <div class="progress" aria-label="Checkpoint progress"><div id="progressBar"></div></div>
+      <p id="checkpointPrompt"></p>
+      <p class="small"><strong>Decision rule:</strong> More than one option may have merit. Select the choice that best addresses the client’s highest-priority evidence, safety, and feasibility.</p>
+      <div id="caseReminder" class="mini"></div>
+      <div id="progressUpdate" style="display:none;margin-top:1rem"></div>
+      <div id="choiceGrid" class="choice-grid" style="margin-top:1rem"></div>
+      <div id="feedbackBox" class="feedback" aria-live="polite"></div>
+      <div class="button-row">
+        <button class="btn-secondary btn-disabled" id="nextBtn" disabled>Continue</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="reportScreen" class="screen" aria-labelledby="reportTitle">
+    <div class="panel">
+      <h2 id="reportTitle">Body Composition Strategist Report</h2>
+      <div id="reportProfile" class="profile-grid"></div>
+    </div>
+
+    <div class="panel">
+      <h3>Instructor Snapshot</h3>
+      <div id="instructorSnapshot" class="report-grid"></div>
+    </div>
+
+    <div class="panel">
+      <h3>Eight-Week Body-Composition Update</h3>
+      <div id="reportMetrics" class="update-grid"></div>
+      <div id="scaleInsight" class="notice"></div>
+    </div>
+
+    <div class="panel">
+      <h3>Strategy Indicators</h3>
+      <p class="small">Higher values represent stronger support in this learning model. These are not clinical measurements.</p>
+      <div id="indicatorReport" class="indicator-grid"></div>
+    </div>
+
+    <div class="panel">
+      <h3>Your Decision Timeline</h3>
+      <div id="timeline" class="timeline"></div>
+    </div>
+
+    <div class="panel">
+      <h3>Grading Rubric: 20 Points</h3>
+      <table>
+        <thead><tr><th>Criterion</th><th>Points</th><th>Evidence of Success</th></tr></thead>
+        <tbody>
+          <tr><td>Checkpoints 1–6</td><td>12</td><td>Each checkpoint earns 2 points for the strongest case-supported choice, 1 point for a reasonable but incomplete choice, or 0 points for a choice that does not adequately address the evidence.</td></tr>
+          <tr><td>Body Composition Moment</td><td>4</td><td>Identifies a specific result, cites at least two exact before-and-after values, and explains why the pattern is more meaningful than weight alone.</td></tr>
+          <tr><td>Strategy Revision</td><td>4</td><td>Names one actual decision, proposes a realistic replacement, predicts effects on at least two indicators, and connects the prediction to the assigned client.</td></tr>
+        </tbody>
+      </table>
+      <p class="small"><strong>Individual reasoning:</strong> Responses must use the student’s simulation ID, client details, selected choices, and exact results. Generic wording, copied definitions, or responses that could apply to any case may earn limited credit.</p>
+      <div class="button-row no-print">
+        <button class="btn-primary" id="continueReflectionBtn">Continue to Open-Ended Questions</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="reflectionScreen" class="screen" aria-labelledby="reflectionTitle">
+    <div class="panel">
+      <h2 id="reflectionTitle">Open-Ended Questions and PDF Submission</h2>
+      <div class="notice"><strong>Write in your own thoughts and words.</strong> Your responses should sound like your analysis of this exact client, not like a general summary of weight management.</div>
+
+      <label for="studentName"><strong>Student name</strong></label>
+      <input type="text" id="studentName" placeholder="Enter your full name">
+      <div class="error" id="nameError">Enter your name before saving the report.</div>
+
+      <div class="response-block">
+        <label for="responseOne"><strong>1. Body Composition Moment (80–140 words)</strong></label>
+        <p>Identify the most important body-composition result in your case. Cite at least two exact before-and-after values from the report. Explain why those results provide a better interpretation than body weight alone, using at least two course concepts.</p>
+        <textarea id="responseOne" maxlength="1800" placeholder="Use your assigned client, exact values, and course concepts."></textarea>
+        <div id="countOne" class="small">0 words</div>
+        <div class="error" id="responseOneError">Write at least 60 words and include your case-specific evidence.</div>
+      </div>
+
+      <div class="response-block">
+        <label for="responseTwo"><strong>2. Strategy Revision (80–140 words)</strong></label>
+        <p>Identify one decision you would change if you repeated the case. Name the original choice, propose one realistic replacement, and predict how the change would affect at least two report indicators. Include one client detail that makes your replacement realistic.</p>
+        <textarea id="responseTwo" maxlength="1800" placeholder="Name the original decision, replacement, predicted indicators, and a client detail."></textarea>
+        <div id="countTwo" class="small">0 words</div>
+        <div class="error" id="responseTwoError">Write at least 60 words and connect the revision to this client.</div>
+      </div>
+
+      <div class="panel" style="box-shadow:none;margin-top:1.2rem">
+        <h3>Save and Submit</h3>
+        <ol>
+          <li>Review both responses for complete sentences and exact simulation evidence.</li>
+          <li>Select <strong>Save Completed Report as PDF</strong>.</li>
+          <li>In the print window, choose <strong>Save as PDF</strong>.</li>
+          <li>Save the file to your desktop or another easy-to-find location.</li>
+          <li>Return to Canvas and upload the PDF to the assignment.</li>
+        </ol>
+      </div>
+
+      <div class="button-row no-print">
+        <button class="btn-primary" id="printBtn">Save Completed Report as PDF</button>
+        <button class="btn-light" id="backReportBtn">Back to Report</button>
+        <button class="btn-light" id="restartBtn">Start a New Case</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const clamp = (n,min=0,max=100) => Math.max(min,Math.min(max,n));
+const round1 = n => Math.round(n*10)/10;
+const shuffle = arr => {
+  const copy=[...arr];
+  for(let i=copy.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [copy[i],copy[j]]=[copy[j],copy[i]];
+  }
+  return copy;
+};
+const effect = (weight=0,waist=0,bodyFat=0,lean=0,satiety=0,recovery=0,sustainability=0,health=0,safety=0) =>
+  ({weight,waist,bodyFat,lean,satiety,recovery,sustainability,health,safety});
+
+const cases = [
+  {
+    id:"ATH",name:"Jordan",age:22,sex:"Man",heightIn:74,weight:205,waist:33,bodyFat:14,
+    type:"athlete",role:"College student and recreational lifter",
+    lead:"Jordan wants to lose 15 pounds because an online calculator labels the current BMI as overweight. Jordan strength-trains four days per week and has maintained the same waist size for a year.",
+    trend:"Weight stable for 12 months",activity:"Resistance training 4 days/week; walks across campus",neat:"Moderate to high",sleep:"7–8 hours most nights",stress:"Moderate",appetite:"Steady hunger and good satiety",intake:"Regular meals; sometimes under-eats after training",
+    metricMode:"athlete",goalMode:"recompose",safety:false,
+    start:{satiety:68,recovery:72,sustainability:76,health:82,leanSupport:78,fatTrend:72}
+  },
+  {
+    id:"NBF",name:"Maya",age:31,sex:"Woman",heightIn:65,weight:142,waist:36,bodyFat:34,
+    type:"normalHighFat",role:"Remote customer-service specialist",
+    lead:"Maya’s weight and BMI have stayed in the expected range, but a screening shows a high body-fat percentage and a waist measurement above the case threshold. Most workdays involve long periods of sitting.",
+    trend:"Weight stable; waist increased 2 inches in 18 months",activity:"One short walk on some weekends",neat:"Low",sleep:"About 6 hours",stress:"High during workweeks",appetite:"Afternoon cravings and low meal satiety",intake:"Irregular lunch; frequent desk snacks",
+    metricMode:"normalHighFat",goalMode:"fatRecomp",safety:false,
+    start:{satiety:42,recovery:38,sustainability:48,health:38,leanSupport:35,fatTrend:34}
+  },
+  {
+    id:"GFL",name:"Carlos",age:44,sex:"Man",heightIn:69,weight:214,waist:42,bodyFat:30,
+    type:"fatLoss",role:"Transit dispatcher",
+    lead:"Carlos would like to reduce health risk and improve stamina. Weight has increased gradually during several years of shift work, and most excess fat is carried around the abdomen.",
+    trend:"Gained about 12 pounds over 3 years",activity:"Mostly sedentary; occasional weekend yard work",neat:"Low",sleep:"6–7 hours with changing shifts",stress:"Moderate to high",appetite:"Very hungry by evening",intake:"Skips breakfast, large evening meal",
+    metricMode:"central",goalMode:"fatLoss",safety:false,
+    start:{satiety:38,recovery:46,sustainability:45,health:30,leanSupport:42,fatTrend:28}
+  },
+  {
+    id:"OLD",name:"Evelyn",age:68,sex:"Woman",heightIn:63,weight:132,waist:32,bodyFat:31,
+    type:"olderLean",role:"Recently retired library assistant",
+    lead:"Evelyn’s weight has barely changed, but she reports more difficulty carrying groceries and rising from low chairs. Activity decreased after retirement, and a body-composition screen suggests loss of lean tissue.",
+    trend:"Weight stable; strength and function declining",activity:"Light household movement; no resistance exercise",neat:"Low to moderate",sleep:"7 hours",stress:"Low",appetite:"Small appetite, especially at lunch",intake:"Three small meals; protein is unevenly distributed",
+    metricMode:"leanLoss",goalMode:"buildLean",safety:false,
+    start:{satiety:55,recovery:62,sustainability:70,health:58,leanSupport:30,fatTrend:55}
+  },
+  {
+    id:"CTR",name:"Nia",age:39,sex:"Woman",heightIn:67,weight:158,waist:37,bodyFat:33,
+    type:"centralRisk",role:"Elementary school teacher",
+    lead:"Nia’s BMI is only modestly elevated, but waist circumference and body-fat percentage suggest a higher health-risk pattern. She is active during class hours but exhausted after work.",
+    trend:"Weight up 5 pounds; waist up 2 inches this year",activity:"On feet at work; no planned exercise",neat:"Moderate on workdays",sleep:"5½–6 hours",stress:"High",appetite:"Low hunger early, strong appetite at night",intake:"Coffee for breakfast; takeout several evenings",
+    metricMode:"central",goalMode:"fatRecomp",safety:false,
+    start:{satiety:36,recovery:32,sustainability:44,health:34,leanSupport:40,fatTrend:32}
+  },
+  {
+    id:"RST",name:"Avery",age:26,sex:"Woman",heightIn:66,weight:121,waist:26,bodyFat:16,
+    type:"safetyRestriction",role:"Graduate student and endurance runner",
+    lead:"Avery has increased training while sharply restricting food. The scale is dropping rapidly, but fatigue, dizziness, food guilt, and anxiety about missed workouts are increasing.",
+    trend:"Lost 11 pounds in 7 weeks",activity:"Runs 6 days/week plus extra workouts",neat:"High",sleep:"5–6 hours",stress:"Very high",appetite:"Strong hunger ignored through rigid food rules",intake:"Eliminates multiple food groups and frequently skips meals",
+    metricMode:"warning",goalMode:"safety",safety:true,
+    start:{satiety:20,recovery:18,sustainability:12,health:22,leanSupport:20,fatTrend:18}
+  },
+  {
+    id:"UND",name:"Walter",age:73,sex:"Man",heightIn:70,weight:126,waist:29,bodyFat:10,
+    type:"underweight",role:"Retired mechanic",
+    lead:"Walter has lost weight without trying after appetite and chewing problems worsened. Clothes fit loosely, energy is low, and family members have noticed reduced strength.",
+    trend:"Unintentional loss of 9 pounds in 4 months",activity:"Short daily walks; activity recently decreased",neat:"Low",sleep:"7–8 hours",stress:"Moderate",appetite:"Low appetite and early fullness",intake:"Small portions; avoids tougher protein foods",
+    metricMode:"underweight",goalMode:"gainLean",safety:true,
+    start:{satiety:28,recovery:35,sustainability:38,health:28,leanSupport:24,fatTrend:30}
+  },
+  {
+    id:"MNT",name:"Sam",age:35,sex:"Man",heightIn:71,weight:178,waist:36,bodyFat:23,
+    type:"maintenanceStress",role:"New parent and project coordinator",
+    lead:"Sam’s weight is stable, but sleep, activity, and meal structure have changed since becoming a parent. Sam wants to prevent gradual fat gain while maintaining energy for work and family.",
+    trend:"Weight stable; clothes slightly tighter at waist",activity:"Previously active; now inconsistent",neat:"Moderate but variable",sleep:"About 5 hours in interrupted blocks",stress:"High",appetite:"Frequent grazing when tired",intake:"Convenience foods and irregular meal timing",
+    metricMode:"trend",goalMode:"maintain",safety:false,
+    start:{satiety:40,recovery:25,sustainability:50,health:54,leanSupport:48,fatTrend:45}
+  }
+];
+
+let currentCase=null;
+let simId="";
+let currentStep=0;
+let steps=[];
+let state={};
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  $(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function bmiFor(c){return c.weight*703/(c.heightIn*c.heightIn)}
+function bmrFor(c){
+  const kg=c.weight/2.2;
+  const factor=c.sex==="Woman"?.9:1;
+  return Math.round(kg*factor*24);
+}
+function heightLabel(inches){return `${Math.floor(inches/12)}′ ${inches%12}″`}
+function waistFlag(c){
+  const high=(c.sex==="Woman"&&c.waist>35)||(c.sex==="Man"&&c.waist>40);
+  return high?"Above the case threshold":"Below the case threshold";
+}
+function bodyFatFlag(c){
+  const high=(c.sex==="Woman"&&c.bodyFat>=32)||(c.sex==="Man"&&c.bodyFat>=25);
+  const low=(c.sex==="Woman"&&c.bodyFat<20)||(c.sex==="Man"&&c.bodyFat<11);
+  if(high) return "Higher body-fat range";
+  if(low) return "Low body-fat range";
+  return "Moderate body-fat range";
+}
+
+function randomCase(){
+  const pool=cases.filter(c=>!currentCase||c.id!==currentCase.id);
+  currentCase=pool[Math.floor(Math.random()*pool.length)];
+  simId=`BC-${currentCase.id}-${Date.now().toString(36).slice(-5).toUpperCase()}-${Math.floor(100+Math.random()*900)}`;
+  $('simIdHeader').textContent=`Simulation ID: ${simId}`;
+  renderCase();
+}
+
+function renderCase(){
+  const c=currentCase;
+  $('caseLead').innerHTML=`<strong>${c.name}, age ${c.age}</strong><p>${c.lead}</p><span class="choice-meta">Stated concern: ${goalConcern(c)}</span>`;
+  const profile=[
+    ['Client',`${c.name}, ${c.age}-year-old ${c.sex.toLowerCase()}`],
+    ['Height and weight',`${heightLabel(c.heightIn)} · ${c.weight} lb`],
+    ['BMI',`${round1(bmiFor(c))} · screening value only`],
+    ['Waist circumference',`${c.waist} in · ${waistFlag(c)}`],
+    ['Body fat',`${c.bodyFat}% · ${bodyFatFlag(c)}`],
+    ['Recent trend',c.trend],
+    ['Activity',c.activity],
+    ['Sleep and stress',`${c.sleep}; ${c.stress.toLowerCase()} stress`]
+  ];
+  $('profileContent').innerHTML=profile.map(([l,v])=>`<div class="profile-item"><span class="label">${l}</span><span class="value">${v}</span></div>`).join('');
+  const energy=[
+    ['Estimated BMR',`${bmrFor(c)} kcal/day`,`Simple module teaching estimate`],
+    ['Everyday movement',c.neat,'NEAT pattern'],
+    ['Structured activity',c.activity,'TEE pattern'],
+    ['Energy-in context',c.intake,'Meal pattern']
+  ];
+  $('energyStrip').innerHTML=energy.map(([l,v,s])=>`<div class="energy-card"><span class="label">${l}</span><span class="value">${v}</span><span class="small">${s}</span></div>`).join('');
+}
+
+function goalConcern(c){
+  const map={
+    athlete:"Lose weight because BMI is elevated",
+    normalHighFat:"Improve health despite a normal BMI",
+    fatLoss:"Reduce abdominal fat and improve stamina",
+    olderLean:"Regain strength without unnecessary weight loss",
+    centralRisk:"Reduce waist-related health risk",
+    safetyRestriction:"Keep losing weight faster",
+    underweight:"Stop unintentional loss and regain function",
+    maintenanceStress:"Prevent gradual fat gain"
+  };
+  return map[c.type];
+}
+
+function metricQuestion(c){
+  const sets={
+    athlete:{correct:'m1',options:[
+      qopt('m1','Treat BMI as a screening flag, but do not make weight loss the priority. Stable waist, 14% body fat, and the training history support monitoring fueling, recovery, and performance instead.',2,'This interpretation uses BMI appropriately as a screening tool and gives greater weight to the client’s waist, body-fat estimate, trend, and training context.'),
+      qopt('m2','Repeat waist and body-fat measurements under standardized conditions before changing the plan. Keep training and intake stable while collecting performance and recovery data.',1,'Confirming measurements is reasonable, but the current evidence already suggests that a BMI-driven weight-loss plan is not the best starting point.'),
+      qopt('m3','Use BMI and body weight to set a small five-pound loss goal while preserving resistance training, carbohydrate intake, and protein distribution.',1,'This is more cautious than aggressive dieting, but it still makes BMI the main target despite stronger evidence that weight loss may not be necessary.'),
+      qopt('m4','Use BMI as the primary outcome and continue reducing weight until it falls below 25, even if waist size, body fat, strength, and recovery remain stable.',0,'A fixed BMI target ignores the limitation of BMI in a muscular client and could encourage unnecessary restriction.')
+    ],feedback:'The strongest interpretation integrates all measurements instead of allowing one screening value to determine the plan.'},
+    normalHighFat:{correct:'m1',options:[
+      qopt('m1','Treat the normal BMI as only one data point. The elevated waist, higher body-fat percentage, sedentary routine, and upward waist trend justify a prevention-focused body-composition plan.',2,'This option integrates the measurements and the client’s routine rather than assuming that a normal BMI rules out health risk.'),
+      qopt('m2','Repeat waist and body-fat measurements before setting a weight goal, but begin low-risk changes in movement, meal structure, and sleep while the data are confirmed.',1,'Measurement confirmation is useful, and low-risk changes are appropriate, but the interpretation does not clearly prioritize the existing waist and body-fat concerns.'),
+      qopt('m3','Focus first on sitting time, sleep, and meal satiety without using body weight as an outcome; reassess waist circumference after four to six weeks.',1,'This behavior-first approach is reasonable, but it underuses the body-fat and waist evidence when defining the client’s current risk pattern.'),
+      qopt('m4','Because BMI is within the expected range, maintain the current routine and repeat screening at the next annual visit unless body weight increases.',0,'Waiting for weight gain would miss the current body-composition and waist trend that the BMI does not capture.')
+    ],feedback:'A normal BMI can coexist with a higher body-fat percentage and elevated waist-related risk.'},
+    central:{correct:'m1',options:[
+      qopt('m1','Give the greatest weight to waist circumference, body-fat pattern, and the upward trend. Use BMI as supporting context while prioritizing gradual risk reduction and lean-tissue preservation.',2,'This interpretation connects fat distribution and trend with health risk while avoiding scale-only thinking.'),
+      qopt('m2','Confirm the waist measurement and review blood pressure, glucose, and lipid information before finalizing risk, while beginning realistic food and activity changes now.',1,'Confirming the measurement and considering other markers is sound, but the current case already provides enough evidence to identify central fat as a priority.'),
+      qopt('m3','Use BMI and recent weight gain as the primary baseline, with waist circumference serving mainly as a way to track whether weight loss is occurring.',1,'BMI and weight trend are relevant, but this approach understates the independent information provided by abdominal fat distribution.'),
+      qopt('m4','Set the plan around reaching a BMI below 25 because changing total weight will automatically resolve waist-related risk and body-fat distribution.',0,'BMI does not show where fat is stored, and a fixed BMI target does not guarantee improvement in central adiposity or lean tissue.')
+    ],feedback:'Waist circumference adds information about fat distribution that BMI cannot provide.'},
+    leanLoss:{correct:'m1',options:[
+      qopt('m1','Interpret the stable weight as potentially masking a shift from lean tissue toward fat. Declining strength and function make muscle-preserving nutrition and resistance activity the priority.',2,'This option connects function, lean tissue, and body composition instead of using scale stability as proof that nothing changed.'),
+      qopt('m2','Confirm the body-composition estimate with a repeated measurement and simple strength or function tests before increasing the exercise load.',1,'Verification and functional testing are appropriate, but the current decline in function already supports beginning a cautious muscle-preserving plan.'),
+      qopt('m3','Increase protein at breakfast and lunch first, then reassess strength before deciding whether resistance exercise is necessary.',1,'Protein distribution may help, but nutrition alone is less complete than combining adequate intake with progressive resistance activity.'),
+      qopt('m4','Because weight has remained stable and BMI is not high, continue the current routine and monitor only for future weight loss.',0,'Stable weight does not rule out lean-tissue loss, especially when strength and function are already declining.')
+    ],feedback:'Body weight can remain unchanged while the proportions of lean tissue and fat shift.'},
+    warning:{correct:'m1',options:[
+      qopt('m1','Stop weight-loss coaching, reduce immediate training pressure, and arrange coordinated medical and eating-disorder assessment because the symptoms and behaviors outweigh the scale goal.',2,'This choice responds to both the physical warning signs and the rigid, compulsive behaviors while staying within an appropriate referral role.'),
+      qopt('m2','Pause intense training and restore regular meals and snacks while a prompt medical and behavioral-health evaluation is arranged.',1,'This is a strong immediate response, but it is less explicit about ending weight-loss coaching and coordinating specialized care.'),
+      qopt('m3','Prioritize medical evaluation for dizziness and fatigue before changing the long-term plan, while asking the client to reduce exercise until cleared.',1,'Medical evaluation is necessary, but this response does not fully address the food guilt, rigid restriction, and compulsive exercise pattern.'),
+      qopt('m4','Slow the rate of loss, add one rest day, and monitor symptoms weekly before deciding whether referral is necessary.',0,'The existing warning signs are already sufficient to stop weight-loss coaching and refer; simply slowing the plan is not adequate.')
+    ],feedback:'Safety concerns and disordered behaviors take priority over weight-management goals.'},
+    underweight:{correct:'m1',options:[
+      qopt('m1','Treat the unintentional loss, reduced strength, low intake, and chewing difficulty as a combined medical and nutrition concern requiring evaluation plus gradual restoration.',2,'This interpretation addresses the likely causes and consequences of the loss rather than focusing on BMI alone.'),
+      qopt('m2','Begin softer, more frequent, nutrient-dense meals immediately while medical and dental appointments are being arranged.',1,'This is a useful immediate action, but the full interpretation should also emphasize function, lean tissue, and the need to investigate the cause.'),
+      qopt('m3','Prioritize a supervised strength program after medical clearance because improving function may help appetite and independence.',1,'Strength work may be useful later, but it does not address the current intake barriers and unexplained weight loss by itself.'),
+      qopt('m4','Observe the trend for another month because BMI alone is not diagnostic and short-term weight changes can reflect fluid shifts.',0,'The loss is unintentional, sustained, and accompanied by reduced strength and appetite problems, so waiting is not appropriate.')
+    ],feedback:'Unexplained weight loss with declining function requires evaluation and nutrition restoration.'},
+    trend:{correct:'m1',options:[
+      qopt('m1','Interpret stable weight alongside the larger waist, lower activity, poor sleep, and increased grazing. The pattern supports early prevention rather than waiting for visible weight gain.',2,'This choice recognizes that body composition and routines can worsen while scale weight remains stable.'),
+      qopt('m2','Repeat waist and body-fat measurements and collect two weeks of sleep, movement, and eating-pattern data before choosing the first intervention.',1,'Collecting data is reasonable, but the current routine changes already justify beginning a low-risk prevention strategy.'),
+      qopt('m3','Make sleep and meal structure the first targets while maintaining current weight, then reassess waist and activity in one month.',1,'This is a sensible first phase, but it gives less attention to restoring movement and lean-tissue support.'),
+      qopt('m4','Keep the current routine because stable weight indicates that energy balance and body composition are probably unchanged.',0,'Stable weight can hide changes in fat distribution, lean tissue, and health behaviors.')
+    ],feedback:'Trends in waist, activity, sleep, and eating patterns can matter even when the scale is stable.'}
+  };
+  return sets[c.metricMode];
+}
+
+function goalQuestion(c){
+  const sets={
+    recompose:{correct:'g1',options:[
+      qopt('g1','Maintain a stable weight range while supporting training performance, adequate energy, recovery, and a favorable lean-to-fat ratio.',2,'This goal matches the client’s muscularity, stable waist, and body-fat estimate without chasing an arbitrary BMI cutoff.'),
+      qopt('g2','Use a four-week fueling and recovery goal first, then reconsider body-composition goals only if performance, waist, or body-fat trends worsen.',1,'This is a strong short-term priority, but it does not clearly state the longer-term body-composition goal.'),
+      qopt('g3','Allow a small two- to three-pound loss only if strength, recovery, and training fuel remain stable, without using BMI as the success measure.',1,'This could be reasonable if the client still prefers a small loss, but the case does not show a clear health need for it.'),
+      qopt('g4','Create a deficit large enough to move BMI below 25 within eight weeks while keeping the current training schedule.',0,'The goal is based on a BMI cutoff rather than the client’s full body-composition and performance evidence.')
+    ],feedback:'The most appropriate goal is based on body composition and performance, not a fixed BMI target.'},
+    fatRecomp:{correct:'g1',options:[
+      qopt('g1','Gradually reduce waist circumference and body-fat percentage while preserving or increasing lean tissue and improving daily routines.',2,'This goal directly addresses the client’s risk pattern while protecting muscle and sustainability.'),
+      qopt('g2','Maintain weight for the first month while improving sleep, meal satiety, and everyday movement, then reassess waist and body fat.',1,'This may be an excellent first phase, but it delays stating the longer-term recomposition goal.'),
+      qopt('g3','Use a modest five-percent weight-loss goal over six months with resistance activity and adequate protein, even though weight is not the main concern.',1,'A gradual loss goal can be reasonable, but it places more emphasis on scale weight than the case requires.'),
+      qopt('g4','Aim for one to two pounds of weight loss each week until BMI reaches the lower half of the expected range.',0,'This target is unnecessarily scale-focused and may increase lean-tissue loss or reduce adherence.')
+    ],feedback:'The best goal combines waist and fat reduction with lean-tissue preservation and realistic behavior change.'},
+    fatLoss:{correct:'g1',options:[
+      qopt('g1','Create a modest, sustainable energy deficit through food and activity changes while reducing waist circumference and preserving lean tissue.',2,'This goal aligns energy balance with the client’s central-risk pattern and the need to maintain muscle.'),
+      qopt('g2','Use four weeks of meal timing, walking, and sleep goals before setting a numerical weight target, then reassess hunger and waist change.',1,'A behavior-first phase is reasonable, but it does not define the full weight-management direction.'),
+      qopt('g3','Set a five- to ten-percent loss goal over six months using mostly dietary changes and add resistance exercise after the first month.',1,'The pace is reasonable, but delaying resistance work provides less protection for lean tissue.'),
+      qopt('g4','Target two pounds per week by combining a large food deficit with daily cardio until waist circumference falls below the threshold.',0,'The aggressive approach increases the risk of poor recovery, hunger, and lean-tissue loss.')
+    ],feedback:'A moderate deficit and combined strategy are more likely to improve body composition sustainably.'},
+    buildLean:{correct:'g1',options:[
+      qopt('g1','Improve strength, function, and lean tissue through adequate energy, protein distributed across meals, and progressive resistance activity.',2,'This goal directly addresses the client’s decline in strength and likely lean-tissue loss.'),
+      qopt('g2','Begin with two weeks of protein distribution and adequate energy, then add progressive resistance exercise once the eating pattern is consistent.',1,'This phased plan is reasonable, but it delays the activity component even though gentle resistance can often begin gradually.'),
+      qopt('g3','Prioritize walking, balance, and daily function first, then consider resistance training if strength continues to decline.',1,'Walking and balance are useful, but resistance activity is more directly connected to the primary goal of rebuilding lean tissue.'),
+      qopt('g4','Reduce body weight to the lower half of the normal BMI range before beginning a strength-building plan.',0,'Further weight loss could worsen lean-tissue loss and function.')
+    ],feedback:'The priority is strength and lean-tissue restoration rather than scale reduction.'},
+    safety:{correct:'g1',options:[
+      qopt('g1','Stop pursuing weight loss, reduce immediate training pressure, and refer for coordinated medical and eating-disorder assessment and treatment.',2,'This is the only goal that fully addresses the client’s physical and behavioral warning signs.'),
+      qopt('g2','Pause intense training and restore regular eating while the client waits for prompt medical and behavioral-health appointments.',1,'This is an appropriate immediate step, but it does not clearly end the weight-loss goal or specify coordinated specialist care.'),
+      qopt('g3','Reduce exercise by half and slow weight loss to about one-half pound per week while monitoring symptoms.',0,'Continuing intentional weight loss remains inappropriate in the presence of these warning signs.'),
+      qopt('g4','Keep the current goal but require weekly weigh-ins, symptom checks, and one additional rest day.',0,'Monitoring does not make an unsafe plan appropriate.')
+    ],feedback:'Stabilization and referral must replace the weight-loss goal.'},
+    gainLean:{correct:'g1',options:[
+      qopt('g1','Investigate the cause of unintentional loss while restoring weight, lean tissue, strength, and food intake with accessible nutrient-dense choices.',2,'This goal addresses both the cause of the loss and the functional consequences.'),
+      qopt('g2','First stop further loss through softer foods, small frequent meals, and practical support while medical and dental evaluation proceeds.',1,'This is a strong immediate goal, but it is less complete than also naming lean-tissue and function restoration.'),
+      qopt('g3','After medical clearance, prioritize strength and independence even if body weight changes only slightly.',1,'Function is important, but the current low intake and unexplained loss also require direct nutrition restoration.'),
+      qopt('g4','Maintain current weight for one month before deciding whether restoration is necessary, because rapid changes may be temporary.',0,'The sustained unintentional loss and declining strength already require action.')
+    ],feedback:'The appropriate goal combines evaluation, adequate intake, and restoration of function and lean tissue.'},
+    maintain:{correct:'g1',options:[
+      qopt('g1','Prevent gradual fat gain by rebuilding realistic meal, movement, and sleep routines while protecting current weight and lean tissue.',2,'This prevention goal fits the client’s stable weight, larger waist, new-parent schedule, and reduced recovery.'),
+      qopt('g2','Make sleep the first four-week target, maintain weight, and add food or activity goals only after sleep becomes more predictable.',1,'Prioritizing sleep is reasonable, but the client can also use small meal and movement anchors now.'),
+      qopt('g3','Track grazing, beverages, and movement for two weeks before selecting one prevention target, without starting a calorie deficit.',1,'The assessment period may clarify patterns, but the current case already suggests several low-burden actions.'),
+      qopt('g4','Start a 500-calorie daily deficit now to prevent future gain, even though weight is stable and sleep is limited.',0,'An aggressive deficit is not necessary and may worsen fatigue, hunger, and adherence.')
+    ],feedback:'The strongest goal is prevention through realistic routines, not aggressive weight loss.'}
+  };
+  return sets[c.goalMode];
+}
+
+function nutritionOptions(c){
+  if(c.type==='athlete') return {
+    correct:'n1',feedback:'The strongest eating strategy supports training and recovery without an unnecessary BMI-driven deficit.',
+    options:[
+      opt('n1','Use regular mixed meals with adequate carbohydrate, protein distributed across the day, and enough total energy to support training and recovery.',effect(.2,-.2,-.7,1.4,8,10,12,7,0),2,'This plan best matches the client’s training demands and protects lean tissue while allowing body composition to be monitored.'),
+      opt('n2','Keep regular meals and workout fuel, but reduce a few energy-dense extras on rest days while monitoring strength, hunger, and recovery.',effect(-1,-.2,-.4,.5,4,4,7,5,0),1,'A small adjustment could be reasonable, but the case does not show a clear need for intentional weight loss.'),
+      opt('n3','Use a higher-protein, lower-carbohydrate pattern and concentrate most carbohydrate around workouts to create a small deficit.',effect(-1.5,-.3,-.5,.3,1,-2,1,2,1),1,'This may preserve protein intake, but reducing carbohydrate and total energy could compromise training quality or recovery.'),
+      opt('n4','Use a short eating window and skip the post-training meal several days per week until BMI falls below 25.',effect(-4,-.6,-.8,-1.5,-15,-14,-18,-7,9),0,'This strategy makes BMI the target and removes food when recovery needs are highest.')
+    ]};
+  if(c.type==='olderLean') return {
+    correct:'n1',feedback:'Adequate energy and protein across the day provide the strongest support for muscle and function.',
+    options:[
+      opt('n1','Add a protein-rich food to each meal and use an easy nutrient-dense snack when appetite is low.',effect(.8,-.1,-.4,1.2,10,9,14,8,0),2,'This directly improves protein distribution and total energy without requiring large meals.'),
+      opt('n2','Add a nutrient-dense shake between meals and strengthen breakfast protein while keeping lunch and dinner portions comfortable.',effect(.6,0,-.2,.7,7,5,8,5,0),1,'This is a practical option for low appetite, but it may provide less complete protein distribution than improving each meal.'),
+      opt('n3','Make dinner the main protein meal and add a small protein snack before bed while leaving breakfast and lunch mostly unchanged.',effect(.2,0,-.1,.3,0,1,2,2,0),1,'This adds protein, but concentrating it late in the day is less supportive than distributing it across meals.'),
+      opt('n4','Reduce lunch and dinner portions slightly to prevent weight gain, then add protein only after strength training begins.',effect(-2.8,-.1,-.2,-1.2,-12,-10,-15,-5,6),0,'A calorie reduction conflicts with the goal of restoring lean tissue and function.')
+    ]};
+  if(c.type==='safetyRestriction') return {
+    correct:'n1',feedback:'The immediate nutrition priority is regular eating and coordinated care, not continued control of weight loss.',
+    options:[
+      opt('n1','Restore regular meals and snacks, include previously restricted food groups, and coordinate the eating plan with qualified professionals.',effect(1.8,.1,1.1,.7,24,22,25,18,-20),2,'This plan addresses energy deficiency, rigid restriction, and the need for professional support.'),
+      opt('n2','Add breakfast and a recovery snack, reduce exercise, and use this as a bridge while prompt medical and behavioral-health care is arranged.',effect(1.1,.1,.7,.4,15,15,14,10,-12),1,'This is a useful immediate step, but it may not be enough to reverse the broader restrictive pattern without a full regular-eating plan.'),
+      opt('n3','Keep the current food choices but increase portions on training days and remove the weekly weigh-in target.',effect(.4,0,.2,.1,6,5,2,2,-4),1,'Increasing intake and reducing monitoring are helpful, but the plan still preserves rigid food rules and exercise-linked eating.'),
+      opt('n4','Maintain the current deficit, add a multivitamin, and lower the weekly weight-loss target while symptoms are monitored.',effect(-3.8,-.3,-.8,-1.7,-20,-22,-25,-17,22),0,'A supplement and slower target do not make continued restriction safe.')
+    ]};
+  if(c.type==='underweight') return {
+    correct:'n1',feedback:'The strongest plan addresses low appetite, chewing difficulty, energy needs, and evaluation together.',
+    options:[
+      opt('n1','Use small frequent meals, soft protein foods, and energy-dense additions while arranging medical and dental evaluation.',effect(2.4,.2,1.2,1,15,13,17,16,-15),2,'This plan is accessible, nutrient dense, and connected to investigation of the underlying problem.'),
+      opt('n2','Add a high-calorie oral nutrition drink between meals and choose softer protein foods while appointments are pending.',effect(1.5,.1,.7,.6,10,8,10,9,-8),1,'This is practical and likely helpful, but it is narrower than adjusting the full eating pattern and adding energy-dense foods throughout the day.'),
+      opt('n3','Fortify the three current meals with oil, nut butter, powdered milk, or cheese but avoid snacks so appetite remains available at meals.',effect(.8,.1,.4,.3,4,3,5,5,-3),1,'Fortification may help, but avoiding snacks can limit total intake when appetite and meal size are already low.'),
+      opt('n4','Wait for appetite to improve before adding food because scheduled eating may increase early fullness and reduce meal enjoyment.',effect(-1.4,-.1,-.2,-.8,-7,-10,-13,-9,10),0,'Waiting is unlikely to reverse unintentional loss and declining strength.')
+    ]};
+  if(c.type==='normalHighFat') return {
+    correct:'n1',feedback:'A structured daytime eating pattern is most likely to improve satiety and reduce unplanned desk grazing.',
+    options:[
+      opt('n1','Build a consistent lunch with protein and fiber, add one planned afternoon snack, and make desk grazing less automatic.',effect(-1.3,-.5,-.8,.3,17,6,17,12,0),2,'This directly addresses irregular lunch, afternoon cravings, and sedentary snacking without requiring an aggressive deficit.'),
+      opt('n2','Track hunger, desk snacks, and beverages for two weeks, then replace the highest-calorie recurring item with a planned option.',effect(-.7,-.2,-.4,.1,8,3,9,6,0),1,'This can identify a meaningful pattern, but it delays improving the low-satiety lunch that is already evident.'),
+      opt('n3','Add a protein-rich breakfast and reduce dinner portions while leaving the current lunch and workday snacking pattern unchanged.',effect(-.8,-.2,-.4,.1,5,2,4,5,0),1,'Breakfast may help some clients, but this option does not target the strongest case-specific barrier: irregular lunch and desk grazing.'),
+      opt('n4','Skip lunch on busy days and reserve more calories for dinner and snacks, using a strict daily calorie target to maintain control.',effect(-2.2,-.4,-.6,-.6,-12,-8,-15,-4,6),0,'Long meal gaps are likely to worsen afternoon cravings and evening hunger.')
+    ]};
+  if(c.type==='fatLoss') return {
+    correct:'n1',feedback:'Distributing satisfying meals earlier in the day is the strongest fit for the client’s shift-work hunger pattern.',
+    options:[
+      opt('n1','Add a practical earlier meal, build lunch and dinner around protein and fiber, and reduce the size of the very large evening meal.',effect(-2.1,-.7,-1,.3,16,6,17,13,0),2,'This addresses the long meal gap, evening hunger, and need for a modest energy deficit.'),
+      opt('n2','Keep breakfast optional, but use a structured lunch and pre-planned dinner portions so the evening meal is smaller and more consistent.',effect(-1.4,-.5,-.7,.1,10,4,12,9,0),1,'This could work, but continuing the long morning gap may leave evening hunger harder to manage.'),
+      opt('n3','Focus on lower-fat dinner choices and remove sugar-sweetened drinks while keeping the current meal timing.',effect(-1.2,-.4,-.6,0,5,3,8,8,0),1,'The calorie reduction may help, but the pattern does not address skipped meals and strong evening hunger.'),
+      opt('n4','Use most calories at one large evening meal so intake is easier to track during changing shifts.',effect(-2.4,-.4,-.6,-.8,-14,-9,-17,-5,7),0,'A single large meal is poorly matched to the client’s existing evening hunger and satiety problem.')
+    ]};
+  if(c.type==='centralRisk') return {
+    correct:'n1',feedback:'The strongest plan reduces long meal gaps and makes the evening routine workable for a tired teacher.',
+    options:[
+      opt('n1','Use a portable breakfast, a planned protein-and-fiber lunch, and a short list of balanced takeout modifications for exhausted evenings.',effect(-1.8,-.7,-.9,.2,16,7,18,13,0),2,'This plan addresses low morning intake, strong nighttime appetite, and the feasibility of busy workdays.'),
+      opt('n2','Meal-prep three days of breakfasts and lunches and use balanced takeout on the other days rather than expecting daily cooking.',effect(-1.3,-.5,-.7,.1,11,5,14,10,0),1,'This is realistic and helpful, but it gives less direct guidance for managing strong evening appetite.'),
+      opt('n3','Keep coffee as breakfast, add a protein snack at midday, and reduce restaurant portions at dinner.',effect(-1,-.4,-.5,0,6,3,8,7,0),1,'This improves the pattern somewhat, but the long morning gap and limited lunch structure remain.'),
+      opt('n4','Remove most carbohydrate foods from dinner and skip lunch on takeout days to create a larger calorie deficit.',effect(-2.8,-.5,-.7,-.8,-11,-10,-18,-5,7),0,'The restrictive plan is unlikely to improve satiety, energy, or adherence in this schedule.')
+    ]};
+  if(c.type==='maintenanceStress') return {
+    correct:'n1',feedback:'The strongest plan uses simple meal anchors and planned convenience rather than an unnecessary deficit.',
+    options:[
+      opt('n1','Create two or three simple meal anchors, keep easy balanced foods available, and use planned snacks so fatigue does not lead to continuous grazing.',effect(-.3,-.2,-.3,.2,13,7,19,9,0),2,'This fits the new-parent schedule and supports maintenance without rigid tracking.'),
+      opt('n2','Track grazing, drinks, and hunger for two weeks, then choose one recurring source of excess intake to change.',effect(-.2,-.1,-.2,.1,6,2,10,5,0),1,'This is a useful assessment strategy, but it delays adding structure that the case already suggests is needed.'),
+      opt('n3','Stop eating after dinner and keep the rest of the irregular meal pattern unchanged.',effect(-.4,-.1,-.2,0,2,1,3,3,0),1,'This may reduce some grazing, but it does not address fatigue-driven intake or inconsistent daytime meals.'),
+      opt('n4','Skip breakfast after nights with more snacking and use extra exercise to offset higher-intake days.',effect(-1.6,-.2,-.3,-.5,-10,-12,-16,-5,7),0,'Compensation is likely to increase hunger, fatigue, and inconsistency.')
+    ]};
+}
+
+function activityOptions(c){
+  if(c.type==='athlete') return {
+    correct:'a1',feedback:'The strongest activity plan protects performance and recovery rather than adding exercise solely to lower BMI.',
+    options:[
+      opt('a1','Continue the current resistance program, protect recovery days, and use performance and waist trends rather than extra exercise as the guide.',effect(.1,-.1,-.2,.8,1,8,12,8,0),2,'The client is already active; the priority is preserving a productive program and avoiding unnecessary exercise compensation.'),
+      opt('a2','Keep resistance training and add two easy aerobic sessions if sleep, fueling, and recovery remain stable.',effect(-.3,-.2,-.3,.5,1,3,7,7,0),1,'This may add cardiovascular benefit, but it is not clearly necessary for the stated BMI concern.'),
+      opt('a3','Reduce lifting from four to three days and add two moderate cardio sessions to support a small recomposition goal.',effect(-.6,-.3,-.4,.1,0,-1,2,5,0),1,'This could be workable, but reducing resistance volume may be less aligned with the client’s performance and lean-tissue goals.'),
+      opt('a4','Add daily cardio while keeping four lifting days so total weekly expenditure is high enough to reach a BMI below 25.',effect(-1.8,-.5,-.6,-.7,-3,-14,-13,-4,7),0,'The extra volume is driven by a BMI target and may compromise recovery and lean tissue.')
+    ]};
+  if(c.type==='safetyRestriction') return {
+    correct:'a1',feedback:'Compulsive exercise and physical warning signs require reduced training pressure and professional assessment.',
+    options:[
+      opt('a1','Pause extra workouts, use only gentle activity as advised, and include exercise behavior in the professional assessment.',effect(.2,0,.2,.1,4,20,18,15,-20),2,'This directly addresses both safety and the compulsive relationship with exercise.'),
+      opt('a2','Stop high-intensity sessions, schedule full rest days, and use short gentle walks while appointments are being arranged.',effect(.1,0,.1,.1,3,13,12,9,-12),1,'This is an appropriate immediate reduction, but it is less explicit about coordinated assessment of the exercise behavior.'),
+      opt('a3','Keep one familiar run several days per week, but stop all extra workouts and remove pace or calorie-burn targets.',effect(-.1,0,0,0,1,5,3,2,-4),1,'Reducing compulsive features helps, but continuing frequent running may still be unsafe before evaluation.'),
+      opt('a4','Replace some steady runs with shorter intervals so training time decreases while fitness and weight loss continue.',effect(-1.5,-.2,-.3,-.6,-7,-20,-18,-13,18),0,'Shorter intervals can still intensify training stress and preserve the unsafe weight-loss goal.')
+    ]};
+  if(c.type==='underweight') return {
+    correct:'a1',feedback:'Once medically appropriate, progressive resistance and balance work best support function without a large energy drain.',
+    options:[
+      opt('a1','After evaluation, begin light progressive resistance and balance work while keeping current walks comfortable.',effect(.1,0,-.1,.8,1,7,12,9,0),2,'This directly supports lean tissue, strength, and independence at a manageable energy cost.'),
+      opt('a2','Maintain comfortable walking and add short chair-rise and carrying practice while nutrition intake stabilizes.',effect(.1,0,0,.4,1,5,8,6,0),1,'This functional plan is a reasonable first step, but it provides less progressive resistance stimulus.'),
+      opt('a3','Begin supervised resistance exercise three days per week immediately to reverse strength loss as quickly as possible.',effect(-.2,0,0,.5,0,-3,1,3,3),1,'Resistance is useful, but the volume and timing may be too ambitious before evaluation and nutrition stabilization.'),
+      opt('a4','Use long daily walks to increase appetite and rebuild endurance before adding strength work.',effect(-1.3,-.1,-.2,-.5,-4,-12,-12,-8,9),0,'The added energy demand could worsen weight and lean-tissue loss.')
+    ]};
+  if(c.type==='olderLean') return {
+    correct:'a1',feedback:'A combined plan with progressive resistance, balance, and comfortable aerobic activity best supports function.',
+    options:[
+      opt('a1','Begin progressive resistance training two or three days weekly and continue comfortable walking and balance practice.',effect(.2,-.3,-.5,1.6,2,8,14,12,0),2,'This plan most directly addresses strength, lean tissue, mobility, and overall health.'),
+      opt('a2','Start with one supervised strength session weekly plus home chair-rise and carrying practice, then progress as confidence improves.',effect(.1,-.1,-.2,.8,1,6,10,8,0),1,'This is a realistic lower-dose start, but it may need progression to provide the full muscle-building benefit.'),
+      opt('a3','Use brisk walking and balance work most days, adding resistance exercise only if strength does not improve.',effect(-.2,-.2,-.2,.1,1,3,7,6,0),1,'Walking and balance help, but they are less direct than resistance training for rebuilding lean tissue.'),
+      opt('a4','Use daily walking as the only exercise because resistance training may increase body weight and joint stress.',effect(-.6,-.2,-.3,-.3,0,1,2,2,1),0,'Avoiding resistance work leaves the primary strength and lean-tissue problem insufficiently addressed.')
+    ]};
+  return {
+    correct:'a1',feedback:'The strongest general plan combines resistance work, aerobic movement, and more everyday activity at a feasible dose.',
+    options:[
+      opt('a1','Combine two or three resistance sessions with regular walking or aerobic activity and more movement during the workday.',effect(-.7,-.6,-.8,1.2,2,7,16,14,0),2,'This combination supports fat loss, lean tissue, cardiovascular health, and daily energy expenditure.'),
+      opt('a2','Use short walking breaks and one longer walk most days for the first month, then add resistance training after the routine is established.',effect(-.5,-.4,-.5,.1,2,5,13,10,0),1,'This is accessible and likely sustainable, but delaying resistance work provides less lean-tissue support.'),
+      opt('a3','Prioritize resistance training three days per week and keep the rest of the current activity pattern unchanged.',effect(-.3,-.2,-.3,.9,1,4,9,9,0),1,'Resistance work is valuable, but the plan misses the client’s low everyday movement or aerobic fitness.'),
+      opt('a4','Use vigorous cardio most days while leaving workday sitting and resistance activity unchanged.',effect(-1.5,-.5,-.6,-.5,-2,-12,-9,2,5),0,'The plan may increase expenditure, but it is less balanced, less sustainable, and provides poor lean-tissue support.')
+    ]};
+}
+
+function recoveryOptions(c){
+  if(c.type==='athlete') return {
+    correct:'r1',feedback:'Recovery should protect the current training program rather than support an unnecessary weight-loss push.',
+    options:[
+      opt('r1','Protect seven to eight hours of sleep, keep one or two recovery days, and use hunger, performance, and soreness to adjust training or fueling.',effect(0,-.1,-.1,.2,8,18,18,9,0),2,'This uses multiple recovery signals and supports both performance and lean tissue.'),
+      opt('r2','Track performance, soreness, and sleep for two weeks before deciding whether any training or eating change is needed.',effect(0,0,0,.1,3,8,10,5,0),1,'Monitoring is useful, but the case already indicates occasional under-fueling after training.'),
+      opt('r3','Prioritize sleep and rest days while keeping the current post-training eating pattern unchanged.',effect(-.1,0,0,.1,1,10,7,4,0),1,'Sleep helps, but recovery remains incomplete if under-eating after training continues.'),
+      opt('r4','Add training whenever body weight stalls, using caffeine and an extra rest day to maintain the weekly schedule.',effect(-.6,-.1,-.1,-.3,-4,-15,-14,-6,7),0,'This ties exercise volume to the scale and risks inadequate recovery.')
+    ]};
+  if(c.type==='safetyRestriction') return {
+    correct:'r1',feedback:'Recovery requires reducing rigid monitoring and using social and professional support.',
+    options:[
+      opt('r1','Remove weigh-in and exercise-compensation rules, involve trusted support, and follow the coordinated professional care plan.',effect(.2,0,.2,.2,13,22,25,17,-18),2,'This addresses the behavior pattern, isolation risk, and need for ongoing care.'),
+      opt('r2','Limit weight checks, schedule meals with a support person, and remove exercise targets while appointments are pending.',effect(.1,0,.1,.1,9,14,16,10,-10),1,'This is a strong immediate support plan, but it is less complete than integrating it with the full care plan.'),
+      opt('r3','Prioritize eight hours of sleep and two rest days while keeping precise food tracking for reassurance.',effect(-.1,0,0,0,1,8,1,2,4),1,'Sleep and rest help, but precise tracking may reinforce the rigid control that is part of the problem.'),
+      opt('r4','Use detailed meal preparation and avoid social eating until symptoms improve so intake remains predictable.',effect(-.5,-.1,-.2,-.2,-9,-12,-22,-12,18),0,'Greater isolation and control are likely to worsen the behavioral warning signs.')
+    ]};
+  if(c.type==='underweight') return {
+    correct:'r1',feedback:'The strongest support plan makes food access easier and keeps evaluation and monitoring connected to the restoration goal.',
+    options:[
+      opt('r1','Ask family for help with shopping and soft meal preparation, schedule evaluations, and use reminders for small meals.',effect(.5,0,.2,.3,10,12,20,14,-8),2,'This addresses practical barriers, intake consistency, and the need for evaluation.'),
+      opt('r2','Use meal delivery or prepared soft foods and review weight, intake, and strength regularly with the healthcare team.',effect(.4,0,.2,.2,7,8,14,10,-6),1,'This is practical and clinically connected, but it provides less direct support for the client’s day-to-day appetite and meal reminders.'),
+      opt('r3','Plan more meals with family and adapt food texture, but wait to arrange evaluation unless weight continues to fall.',effect(.2,0,.1,.1,5,5,8,5,-1),1,'Social meals and texture changes may help, but delaying evaluation is not ideal given the current loss and weakness.'),
+      opt('r4','Drink extra water before meals and wait for strong hunger so eating does not feel forced.',effect(-.8,0,-.1,-.4,-9,-6,-13,-8,7),0,'Both actions can reduce intake further in a client with early fullness and low appetite.')
+    ]};
+  const sleepGain=c.type==='maintenanceStress'?26:18;
+  return {
+    correct:'r1',feedback:'The strongest plan improves recovery while reducing decision burden and preserving flexibility.',
+    options:[
+      opt('r1','Choose a realistic sleep target, anchor one or two meals, and prepare flexible backup options for the busiest days.',effect(0,-.1,-.2,.1,10,sleepGain,23,10,0),2,'This plan addresses recovery and adherence without expecting a perfect routine.'),
+      opt('r2','Track sleep, hunger, stress, and meal timing for two weeks before choosing the single barrier that has the largest effect.',effect(0,0,-.1,0,4,7,10,5,0),1,'The assessment can improve self-awareness, but it delays acting on barriers that are already clear in the case.'),
+      opt('r3','Focus on improving sleep first while keeping food and activity plans unchanged for one month.',effect(0,0,-.1,0,4,sleepGain*.65,8,5,0),1,'Sleep is an important lever, but a few small meal or movement changes could occur at the same time.'),
+      opt('r4','Use daily weigh-ins and adjust food or exercise whenever weight changes by more than one pound.',effect(-.3,0,0,-.1,-5,-7,-18,-6,10),0,'Reactive changes based on normal fluid fluctuation are unlikely to support recovery or sustainability.')
+    ]};
+}
+
+function progressQuestion(c){
+  if(c.type==='safetyRestriction') return {
+    correct:'p1',feedback:'The progress update must be interpreted through the safety pattern rather than the direction of weight.',
+    options:[
+      qopt('p1','Stop weight-loss coaching, communicate the warning signs, and continue coordinated medical and eating-disorder care with a stabilization focus.',2,'This response addresses the full pattern and keeps the next step within an appropriate scope of care.'),
+      qopt('p2','Pause all structured training and restore regular meals while the client waits for the next professional appointment.',1,'This is an appropriate immediate step, but it is less complete than coordinated ongoing care and explicit termination of the weight-loss goal.'),
+      qopt('p3','Continue only low-intensity exercise and a smaller deficit if dizziness improves and weekly monitoring is available.',0,'Improvement in one symptom would not make continued intentional loss appropriate in this pattern.'),
+      qopt('p4','Maintain the revised plan for two more weeks because the lower scale weight may improve motivation and reduce anxiety.',0,'The scale result does not outweigh the behavioral and physical warning signs.')
+    ]};
+  if(c.type==='underweight') return {
+    correct:'p1',feedback:'The next step should integrate evaluation, restoration, and function rather than react negatively to appropriate weight gain.',
+    options:[
+      qopt('p1','Continue medical and dental evaluation while advancing the small-meal plan and progressive strength work as tolerated.',2,'This response addresses both the cause of the loss and the goals of restoring intake, lean tissue, and function.'),
+      qopt('p2','Increase energy and protein further, but postpone strength progression until intake and weight are more stable.',1,'This is a defensible sequencing choice, but it may delay safe functional activity that could support recovery.'),
+      qopt('p3','Focus first on resolving chewing difficulty while maintaining the current meal plan and activity level.',1,'Chewing difficulty is important, but the broader medical, nutrition, and strength plan should continue at the same time.'),
+      qopt('p4','Reduce energy-dense snacks because the increase in body fat could create future health risk.',0,'A small body-fat increase may be appropriate during restoration and should not override the current undernutrition risk.')
+    ]};
+  const leanLoss=state.progress.leanChange<-.5;
+  const poorRecovery=state.indicators.recovery<42;
+  if(leanLoss) return {
+    correct:'p1',feedback:'The scale change is less favorable when lean tissue is falling.',
+    options:[
+      qopt('p1','Reduce the energy deficit and strengthen protein distribution and resistance training, then reassess waist, lean tissue, and recovery.',2,'This directly addresses the unwanted lean-tissue loss while preserving the useful parts of the plan.'),
+      qopt('p2','Keep total calories unchanged but replace some cardio with resistance training and add protein around exercise.',1,'This may improve lean-tissue support, but the existing deficit may still be too large.'),
+      qopt('p3','Pause the scale-loss goal for two weeks, repeat the body-composition measure, and collect recovery data before changing the plan.',1,'Rechecking the estimate is reasonable, but the current lean-tissue decline already justifies a protective adjustment.'),
+      qopt('p4','Increase the deficit slightly so the client reaches the target sooner and can return to maintenance before more muscle is lost.',0,'A larger deficit is likely to worsen the lean-tissue loss.')
+    ]};
+  if(poorRecovery) return {
+    correct:'p1',feedback:'A favorable waist or weight trend does not make poor recovery acceptable.',
+    options:[
+      qopt('p1','Keep the useful core strategy, but reduce training or restriction pressure and strengthen sleep, fueling, and recovery support.',2,'This preserves progress while addressing the factor most likely to undermine health and adherence.'),
+      qopt('p2','Hold the plan steady for two weeks while collecting sleep, fatigue, hunger, and performance data before making one targeted adjustment.',1,'A short observation period may clarify the cause, but poor recovery already supports a small immediate reduction in pressure.'),
+      qopt('p3','Add food around exercise while keeping the current training volume and sleep schedule unchanged.',1,'Additional fueling may help, but it does not address all likely contributors to poor recovery.'),
+      qopt('p4','Add more activity because the slower recovery suggests that the body has adapted to the current exercise dose.',0,'Poor recovery is a reason to reduce or rebalance stress, not add more.')
+    ]};
+  return {
+    correct:'p1',feedback:'The strongest response uses the full pattern and avoids unnecessary intensification.',
+    options:[
+      qopt('p1','Continue the sustainable core plan and make one small adjustment tied to the client’s remaining barrier or goal.',2,'This uses the favorable pattern while keeping the next step individualized and realistic.'),
+      qopt('p2','Maintain the plan unchanged for another eight weeks because the indicators are moving in a favorable direction.',1,'Continuing may be reasonable, but the case still contains a remaining barrier that can guide a small refinement.'),
+      qopt('p3','Increase either activity or the food deficit slightly if hunger, recovery, and adherence are all strong.',1,'A small progression could be appropriate, but it should not be automatic when the current plan is already working.'),
+      qopt('p4','Increase both exercise volume and food restriction so the next phase produces a faster scale change.',0,'Intensifying both sides of energy balance adds risk without evidence that the current plan is inadequate.')
+    ]};
+}
+
+function qopt(id,text,points,rationale){return {id,text,points,rationale}}
+function opt(id,text,effectObj,points,rationale){return {id,text,effect:effectObj,points,rationale}}
+
+function buildSteps(){
+  const mq=metricQuestion(currentCase);
+  const gq=goalQuestion(currentCase);
+  const nq=nutritionOptions(currentCase);
+  const aq=activityOptions(currentCase);
+  const rq=recoveryOptions(currentCase);
+  steps=[
+    {title:'Interpret the Measurements',prompt:'Which interpretation should carry the most weight when planning the next step?',correct:mq.correct,options:mq.options,feedback:mq.feedback,category:'Measurement interpretation'},
+    {title:'Set the Priority Goal',prompt:'Which goal best fits the client’s evidence, safety needs, and current life context?',correct:gq.correct,options:gq.options,feedback:gq.feedback,category:'Goal and energy context'},
+    {title:'Choose the Eating Strategy',prompt:'Which eating strategy is the strongest first-phase plan for this client?',correct:nq.correct,options:nq.options,feedback:nq.feedback,category:'Nutrition strategy'},
+    {title:'Choose the Movement Strategy',prompt:'Which activity approach provides the best balance of benefit, safety, and feasibility?',correct:aq.correct,options:aq.options,feedback:aq.feedback,category:'Activity strategy'},
+    {title:'Support Recovery and Sustainability',prompt:'Which support strategy is most likely to address the client’s main adherence or recovery barrier?',correct:rq.correct,options:rq.options,feedback:rq.feedback,category:'Recovery and sustainability'}
+  ];
+}
+
+function resetState(){
+  currentStep=0;
+  state={score:0,history:[],effects:effect(),indicators:{...currentCase.start},progress:null};
+  $('studentName').value='';$('responseOne').value='';$('responseTwo').value='';
+  updateWordCount('responseOne','countOne');updateWordCount('responseTwo','countTwo');
+}
+
+function startSimulation(){
+  buildSteps();resetState();renderStep();showScreen('simulationScreen');
+}
+
+function renderStep(){
+  let step;
+  if(currentStep===5){
+    if(!state.progress) calculateProgress();
+    const pq=progressQuestion(currentCase);
+    step={title:'Respond to the Progress Update',prompt:'Which next step is best supported by the complete eight-week pattern?',correct:pq.correct,options:pq.options,feedback:pq.feedback,category:'Progress response'};
+    steps[5]=step;
+  }else step=steps[currentStep];
+
+  $('stepNumber').textContent=currentStep+1;
+  $('checkpointTitle').textContent=step.title;
+  $('checkpointPrompt').textContent=step.prompt;
+  $('progressBar').style.width=`${(currentStep/6)*100}%`;
+  $('caseReminder').innerHTML=`<span class="label">Client reminder</span><strong>${currentCase.name}</strong>: ${currentCase.lead}`;
+  $('feedbackBox').className='feedback';$('feedbackBox').innerHTML='';
+  $('nextBtn').disabled=true;$('nextBtn').classList.add('btn-disabled');
+  $('nextBtn').textContent=currentStep===5?'View My Report':'Continue';
+
+  if(currentStep===5){
+    $('progressUpdate').style.display='block';
+    $('progressUpdate').innerHTML=buildProgressHtml();
+  }else{
+    $('progressUpdate').style.display='none';$('progressUpdate').innerHTML='';
+  }
+
+  const randomized=shuffle(step.options);
+  $('choiceGrid').innerHTML='';
+  randomized.forEach(choice=>{
+    const btn=document.createElement('button');
+    btn.className='choice-card';btn.type='button';
+    btn.innerHTML=`<div class="choice-title">${choice.text}</div>`;
+    btn.addEventListener('click',()=>selectChoice(choice,btn));
+    $('choiceGrid').appendChild(btn);
+  });
+}
+
+function selectChoice(choice,button){
+  const step=steps[currentStep];
+  if(state.history.some(h=>h.step===currentStep)) return;
+  document.querySelectorAll('#choiceGrid .choice-card').forEach(b=>b.disabled=true);
+  const points=Number.isFinite(choice.points)?choice.points:(choice.id===step.correct?2:0);
+  const rating=points===2?'strongest':points===1?'partial':'limited';
+  button.classList.add(points===2?'selected':points===1?'partial-selected':'wrong-selected');
+  state.score+=points;
+  if(choice.effect){
+    Object.keys(state.effects).forEach(k=>state.effects[k]+=choice.effect[k]||0);
+    applyIndicatorEffect(choice.effect);
+  }
+  state.history.push({step:currentStep,category:step.category,title:step.title,choice:choice.text,points,correct:points===2});
+  const heading=points===2?'Strongest-supported choice':points===1?'Reasonable, but incomplete':'Less-supported choice';
+  const className=points===2?'feedback show':points===1?'feedback show partial':'feedback show incorrect';
+  const rationale=choice.rationale||step.feedback;
+  $('feedbackBox').className=className;
+  $('feedbackBox').innerHTML=`<h3>${heading}</h3><p>${rationale}</p><p class="small">${step.feedback}</p><p class="small">Checkpoint score: <strong>${points} / 2</strong></p>`;
+  $('nextBtn').disabled=false;$('nextBtn').classList.remove('btn-disabled');
+}
+
+function applyIndicatorEffect(e){
+  state.indicators.satiety=clamp(state.indicators.satiety+(e.satiety||0));
+  state.indicators.recovery=clamp(state.indicators.recovery+(e.recovery||0));
+  state.indicators.sustainability=clamp(state.indicators.sustainability+(e.sustainability||0));
+  state.indicators.health=clamp(state.indicators.health+(e.health||0));
+  state.indicators.leanSupport=clamp(state.indicators.leanSupport+(e.lean||0)*8+(e.recovery||0)*.12);
+  state.indicators.fatTrend=clamp(state.indicators.fatTrend+(-(e.bodyFat||0))*8+(-(e.waist||0))*3);
+}
+
+function calculateProgress(){
+  const c=currentCase,e=state.effects;
+  const initialLean=c.weight*(1-c.bodyFat/100);
+  let weightChange=e.weight,waistChange=e.waist,bodyFatChange=e.bodyFat,leanChange=e.lean;
+  if(c.type==='normalHighFat'||c.type==='centralRisk'){
+    waistChange-=.2;bodyFatChange-=.2;
+  }
+  if(c.type==='maintenanceStress' && state.indicators.recovery>55){
+    waistChange-=.2;bodyFatChange-=.2;
+  }
+  const finalWeight=round1(Math.max(90,c.weight+weightChange));
+  const finalWaist=round1(Math.max(20,c.waist+waistChange));
+  const finalBodyFat=round1(Math.max(3,c.bodyFat+bodyFatChange));
+  const finalLean=round1(Math.max(60,initialLean+leanChange));
+  const safetyConcern=(c.safety&&e.safety>0)||state.indicators.recovery<25||state.indicators.sustainability<20||leanChange<-1.5;
+  state.progress={
+    initialLean:round1(initialLean),finalWeight,finalWaist,finalBodyFat,finalLean,
+    weightChange:round1(finalWeight-c.weight),waistChange:round1(finalWaist-c.waist),bodyFatChange:round1(finalBodyFat-c.bodyFat),leanChange:round1(finalLean-initialLean),safetyConcern
+  };
+}
+
+function buildProgressHtml(){
+  const c=currentCase,p=state.progress;
+  const metrics=[
+    ['Body weight',`${c.weight} lb`,`${p.finalWeight} lb`,p.weightChange,'lb'],
+    ['Waist circumference',`${c.waist} in`,`${p.finalWaist} in`,p.waistChange,'in'],
+    ['Body-fat percentage',`${c.bodyFat}%`,`${p.finalBodyFat}%`,p.bodyFatChange,'percentage points'],
+    ['Estimated lean tissue',`${p.initialLean} lb`,`${p.finalLean} lb`,p.leanChange,'lb']
+  ];
+  const cards=metrics.map(([label,b,a,d,u])=>metricCard(label,b,a,d,u)).join('');
+  const warning=p.safetyConcern?`<div class="safety-note"><strong>Safety flag:</strong> The pattern includes a warning sign such as very low recovery, poor sustainability, excessive restriction, continued unintentional loss, or loss of lean tissue. Do not judge the outcome by scale change alone.</div>`:'';
+  return `<div class="panel" style="box-shadow:none"><h3>Eight-Week Update</h3><div class="update-grid">${cards}</div>${warning}<h3>Strategy Indicators</h3><div class="indicator-grid">${indicatorCards()}</div></div>`;
+}
+
+function metricCard(label,before,after,delta,unit){
+  const sign=delta>0?'+':'';
+  let cls='change-neutral';
+  if(label==='Estimated lean tissue') cls=delta>=0?'change-good':'change-watch';
+  else if(label==='Body-fat percentage'||label==='Waist circumference') cls=delta<=0?'change-good':'change-watch';
+  return `<div class="metric-card"><span class="label">${label}</span><div class="metric-values"><span class="metric-before">${before}</span><span class="arrow">→</span><span class="metric-after">${after}</span></div><div class="${cls}"><strong>${sign}${delta} ${unit}</strong></div></div>`;
+}
+
+function descriptor(key,value){
+  const low=value<40,mid=value<70;
+  const maps={
+    satiety:["Low fullness support; hunger may undermine the plan.","Moderate satiety support with room for improvement.","Strong satiety support across the plan."],
+    recovery:["Recovery is poor; sleep, energy, or training load needs attention.","Recovery is mixed and may limit progress.","Recovery strongly supports the plan."],
+    sustainability:["The plan is unlikely to continue safely or realistically.","The plan may work but includes adherence barriers.","The plan fits the client and is likely to be maintainable."],
+    health:["The overall pattern is not moving health risk in a favorable direction.","Some choices support health, but important concerns remain.","The overall pattern strongly supports a favorable health direction."],
+    leanSupport:["Lean tissue is poorly supported or at risk.","Some lean-tissue support is present.","The plan strongly supports preserving or building lean tissue."],
+    fatTrend:["The fat-mass direction is unfavorable or unclear.","The fat-mass direction shows modest improvement.","The plan strongly supports a favorable fat-mass direction."]
+  };
+  return maps[key][low?0:mid?1:2];
+}
+function indicatorCards(){
+  const labels={satiety:'Satiety',recovery:'Recovery',sustainability:'Sustainability',health:'Health-Risk Direction',leanSupport:'Lean-Tissue Support',fatTrend:'Fat-Mass Direction'};
+  return Object.keys(labels).map(key=>{
+    const v=Math.round(state.indicators[key]);
+    return `<div class="meter-card"><strong>${labels[key]}</strong><div class="meter-track"><div class="meter-fill" style="width:${v}%"></div></div><div class="meter-number">${v} / 100</div><div class="meter-status">${descriptor(key,v)}</div></div>`;
+  }).join('');
+}
+
+function scaleInsight(){
+  const p=state.progress;
+  if(Math.abs(p.weightChange)<1 && (Math.abs(p.bodyFatChange)>=.8||Math.abs(p.leanChange)>=.8))
+    return `The scale changed very little, but body composition shifted. This case shows why weight alone can miss changes in fat and lean tissue.`;
+  if(p.weightChange<0 && p.leanChange<-.5)
+    return `The scale decreased, but lean tissue also decreased. Faster or larger weight loss is not automatically a better body-composition result.`;
+  if(p.weightChange>0 && p.leanChange>.5)
+    return `Body weight increased while lean tissue improved. The scale alone could mislabel a favorable recomposition or restoration result.`;
+  if(p.waistChange<0 && p.bodyFatChange<0)
+    return `Waist circumference and body-fat percentage moved in a favorable direction. These changes provide more context than scale weight alone.`;
+  if(p.safetyConcern)
+    return `The most important result is the safety pattern, not the direction of body weight. Symptoms, restriction, recovery, and unintentional loss must shape the next step.`;
+  return `The report should be interpreted as a pattern. Weight, waist, fat percentage, lean tissue, recovery, and sustainability should be considered together.`;
+}
+
+function buildReport(){
+  const c=currentCase,p=state.progress;
+  const profile=[
+    ['Student name','Completed on final page'],['Simulation ID',simId],['Client',`${c.name} · ${c.age}-year-old ${c.sex.toLowerCase()}`],['Case type',caseTypeLabel(c.type)],
+    ['Baseline BMI',round1(bmiFor(c))],['Baseline waist',`${c.waist} in`],['Baseline body fat',`${c.bodyFat}%`],['Checkpoint score',`${state.score} / 12`]
+  ];
+  $('reportProfile').innerHTML=profile.map(([l,v])=>`<div class="profile-item"><span class="label">${l}</span><span class="value">${v}</span></div>`).join('');
+  const strongestCount=state.history.filter(h=>h.points===2).length;
+  const partialCount=state.history.filter(h=>h.points===1).length;
+  const fingerprint=state.history.map(h=>`${h.step+1}:${h.points}`).join(' · ');
+  const snapshot=[
+    ['Checkpoint points',`${state.score} of 12`],['Strongest selections',`${strongestCount} of 6`],['Reasonable selections',`${partialCount} of 6`],['Decision fingerprint',fingerprint]
+  ];
+  $('instructorSnapshot').innerHTML=snapshot.map(([l,v])=>`<div class="score-card"><span class="label">${l}</span><span class="value">${v}</span></div>`).join('');
+  $('reportMetrics').innerHTML=[
+    ['Body weight',`${c.weight} lb`,`${p.finalWeight} lb`,p.weightChange,'lb'],
+    ['Waist circumference',`${c.waist} in`,`${p.finalWaist} in`,p.waistChange,'in'],
+    ['Body-fat percentage',`${c.bodyFat}%`,`${p.finalBodyFat}%`,p.bodyFatChange,'percentage points'],
+    ['Estimated lean tissue',`${p.initialLean} lb`,`${p.finalLean} lb`,p.leanChange,'lb']
+  ].map(x=>metricCard(...x)).join('');
+  $('scaleInsight').innerHTML=`<strong>Beyond-the-scale insight:</strong> ${scaleInsight()}`;
+  $('indicatorReport').innerHTML=indicatorCards();
+  $('timeline').innerHTML=state.history.map(h=>{const cls=h.points===2?'correct':h.points===1?'partial':'incorrect';const label=h.points===2?'Strongest-supported selection':h.points===1?'Reasonable but incomplete selection':'Less-supported selection';return `<div class="timeline-item ${cls}"><strong>Checkpoint ${h.step+1}: ${h.category}</strong><br>${h.choice}<br><span class="small">${h.points} / 2 · ${label}</span></div>`;}).join('');
+}
+
+function caseTypeLabel(type){
+  const labels={athlete:'Muscular BMI limitation',normalHighFat:'Normal BMI with higher body fat',fatLoss:'Central-risk fat loss',olderLean:'Age-related lean-tissue loss',centralRisk:'Waist-related risk',safetyRestriction:'Restriction and exercise warning signs',underweight:'Unintentional underweight',maintenanceStress:'Weight-maintenance prevention'};
+  return labels[type];
+}
+
+function updateWordCount(areaId,countId){
+  const text=$(areaId).value.trim();
+  const count=text?text.split(/\s+/).length:0;
+  $(countId).textContent=`${count} word${count===1?'':'s'}`;
+  $(countId).className=count>=60?'small word-ok':'small';
+}
+function validateResponses(){
+  const nameOk=$('studentName').value.trim().length>=2;
+  const count1=$('responseOne').value.trim()?$('responseOne').value.trim().split(/\s+/).length:0;
+  const count2=$('responseTwo').value.trim()?$('responseTwo').value.trim().split(/\s+/).length:0;
+  const r1=count1>=60,r2=count2>=60;
+  $('nameError').classList.toggle('show',!nameOk);
+  $('responseOneError').classList.toggle('show',!r1);
+  $('responseTwoError').classList.toggle('show',!r2);
+  if(!(nameOk&&r1&&r2)){
+    const first=document.querySelector('.error.show');
+    if(first) first.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+  return nameOk&&r1&&r2;
+}
+
+$('startBtn').addEventListener('click',()=>{randomCase();showScreen('caseScreen')});
+$('newCaseBtn').addEventListener('click',randomCase);
+$('beginBtn').addEventListener('click',startSimulation);
+$('nextBtn').addEventListener('click',()=>{
+  if(currentStep<5){currentStep++;renderStep();window.scrollTo({top:0,behavior:'smooth'});}
+  else{buildReport();showScreen('reportScreen')}
+});
+$('continueReflectionBtn').addEventListener('click',()=>showScreen('reflectionScreen'));
+$('backReportBtn').addEventListener('click',()=>showScreen('reportScreen'));
+$('responseOne').addEventListener('input',()=>updateWordCount('responseOne','countOne'));
+$('responseTwo').addEventListener('input',()=>updateWordCount('responseTwo','countTwo'));
+$('printBtn').addEventListener('click',()=>{
+  if(!validateResponses()) return;
+  const name=$('studentName').value.trim();
+  const nameCard=document.querySelector('#reportProfile .profile-item:first-child .value');
+  if(nameCard) nameCard.textContent=name;
+  document.body.classList.add('printing');
+  window.print();
+});
+window.addEventListener('afterprint',()=>document.body.classList.remove('printing'));
+$('restartBtn').addEventListener('click',()=>{currentCase=null;randomCase();showScreen('caseScreen')});
+</script>
+</body>
+</html>
