@@ -341,7 +341,7 @@
       <div>
         <h2 id="startTitle">Build a plan that improves health, not just a number on the scale.</h2>
         <p>You will manage a randomized fictional client through six checkpoints. You will interpret body-composition evidence, choose a realistic goal, build a nutrition and movement strategy, and respond to an eight-week progress update. Several choices may be defensible, so you must select the option that best fits the complete case.</p>
-        <div class="notice"><strong>Your goal is not always weight loss.</strong> A strong strategy may preserve muscle, reduce waist circumference, improve body-fat percentage, support recovery, or identify when weight-management coaching should stop and a healthcare referral is needed.</div>
+        <div class="notice"><strong>Your goal is not always weight loss.</strong> A strong strategy may preserve muscle, reduce waist circumference, improve body-fat percentage, support recovery, or recognize when unexplained weight change requires healthcare evaluation.</div>
         <div class="button-row">
           <button class="btn-primary" id="startBtn">Start Random Case</button>
         </div>
@@ -564,14 +564,6 @@ const cases = [
     start:{satiety:36,recovery:32,sustainability:44,health:34,leanSupport:40,fatTrend:32}
   },
   {
-    id:"RST",name:"Avery",age:26,sex:"Woman",heightIn:66,weight:121,waist:26,bodyFat:16,
-    type:"safetyRestriction",role:"Graduate student and endurance runner",
-    lead:"Avery has increased training while sharply restricting food. The scale is dropping rapidly, but fatigue, dizziness, food guilt, and anxiety about missed workouts are increasing.",
-    trend:"Lost 11 pounds in 7 weeks",activity:"Runs 6 days/week plus extra workouts",neat:"High",sleep:"5–6 hours",stress:"Very high",appetite:"Strong hunger ignored through rigid food rules",intake:"Eliminates multiple food groups and frequently skips meals",
-    metricMode:"warning",goalMode:"safety",safety:true,
-    start:{satiety:20,recovery:18,sustainability:12,health:22,leanSupport:20,fatTrend:18}
-  },
-  {
     id:"UND",name:"Walter",age:73,sex:"Man",heightIn:70,weight:126,waist:29,bodyFat:10,
     type:"underweight",role:"Retired mechanic",
     lead:"Walter has lost weight without trying after appetite and chewing problems worsened. Clothes fit loosely, energy is low, and family members have noticed reduced strength.",
@@ -658,7 +650,6 @@ function goalConcern(c){
     fatLoss:"Reduce abdominal fat and improve stamina",
     olderLean:"Regain strength without unnecessary weight loss",
     centralRisk:"Reduce waist-related health risk",
-    safetyRestriction:"Keep losing weight faster",
     underweight:"Stop unintentional loss and regain function",
     maintenanceStress:"Prevent gradual fat gain"
   };
@@ -691,12 +682,6 @@ function metricQuestion(c){
       qopt('m3','Increase protein at breakfast and lunch first, then reassess strength before deciding whether resistance exercise is necessary.',1,'Protein distribution may help, but nutrition alone is less complete than combining adequate intake with progressive resistance activity.'),
       qopt('m4','Because weight has remained stable and BMI is not high, continue the current routine and monitor only for future weight loss.',0,'Stable weight does not rule out lean-tissue loss, especially when strength and function are already declining.')
     ],feedback:'Body weight can remain unchanged while the proportions of lean tissue and fat shift.'},
-    warning:{correct:'m1',options:[
-      qopt('m1','Stop weight-loss coaching, reduce immediate training pressure, and arrange coordinated medical and eating-disorder assessment because the symptoms and behaviors outweigh the scale goal.',2,'This choice responds to both the physical warning signs and the rigid, compulsive behaviors while staying within an appropriate referral role.'),
-      qopt('m2','Pause intense training and restore regular meals and snacks while a prompt medical and behavioral-health evaluation is arranged.',1,'This is a strong immediate response, but it is less explicit about ending weight-loss coaching and coordinating specialized care.'),
-      qopt('m3','Prioritize medical evaluation for dizziness and fatigue before changing the long-term plan, while asking the client to reduce exercise until cleared.',1,'Medical evaluation is necessary, but this response does not fully address the food guilt, rigid restriction, and compulsive exercise pattern.'),
-      qopt('m4','Slow the rate of loss, add one rest day, and monitor symptoms weekly before deciding whether referral is necessary.',0,'The existing warning signs are already sufficient to stop weight-loss coaching and refer; simply slowing the plan is not adequate.')
-    ],feedback:'Safety concerns and disordered behaviors take priority over weight-management goals.'},
     underweight:{correct:'m1',options:[
       qopt('m1','Treat the unintentional loss, reduced strength, low intake, and chewing difficulty as a combined medical and nutrition concern requiring evaluation plus gradual restoration.',2,'This interpretation addresses the likely causes and consequences of the loss rather than focusing on BMI alone.'),
       qopt('m2','Begin softer, more frequent, nutrient-dense meals immediately while medical and dental appointments are being arranged.',1,'This is a useful immediate action, but the full interpretation should also emphasize function, lean tissue, and the need to investigate the cause.'),
@@ -739,12 +724,6 @@ function goalQuestion(c){
       qopt('g3','Prioritize walking, balance, and daily function first, then consider resistance training if strength continues to decline.',1,'Walking and balance are useful, but resistance activity is more directly connected to the primary goal of rebuilding lean tissue.'),
       qopt('g4','Reduce body weight to the lower half of the normal BMI range before beginning a strength-building plan.',0,'Further weight loss could worsen lean-tissue loss and function.')
     ],feedback:'The priority is strength and lean-tissue restoration rather than scale reduction.'},
-    safety:{correct:'g1',options:[
-      qopt('g1','Stop pursuing weight loss, reduce immediate training pressure, and refer for coordinated medical and eating-disorder assessment and treatment.',2,'This is the only goal that fully addresses the client’s physical and behavioral warning signs.'),
-      qopt('g2','Pause intense training and restore regular eating while the client waits for prompt medical and behavioral-health appointments.',1,'This is an appropriate immediate step, but it does not clearly end the weight-loss goal or specify coordinated specialist care.'),
-      qopt('g3','Reduce exercise by half and slow weight loss to about one-half pound per week while monitoring symptoms.',0,'Continuing intentional weight loss remains inappropriate in the presence of these warning signs.'),
-      qopt('g4','Keep the current goal but require weekly weigh-ins, symptom checks, and one additional rest day.',0,'Monitoring does not make an unsafe plan appropriate.')
-    ],feedback:'Stabilization and referral must replace the weight-loss goal.'},
     gainLean:{correct:'g1',options:[
       qopt('g1','Investigate the cause of unintentional loss while restoring weight, lean tissue, strength, and food intake with accessible nutrient-dense choices.',2,'This goal addresses both the cause of the loss and the functional consequences.'),
       qopt('g2','First stop further loss through softer foods, small frequent meals, and practical support while medical and dental evaluation proceeds.',1,'This is a strong immediate goal, but it is less complete than also naming lean-tissue and function restoration.'),
@@ -777,14 +756,6 @@ function nutritionOptions(c){
       opt('n2','Add a nutrient-dense shake between meals and strengthen breakfast protein while keeping lunch and dinner portions comfortable.',effect(.6,0,-.2,.7,7,5,8,5,0),1,'This is a practical option for low appetite, but it may provide less complete protein distribution than improving each meal.'),
       opt('n3','Make dinner the main protein meal and add a small protein snack before bed while leaving breakfast and lunch mostly unchanged.',effect(.2,0,-.1,.3,0,1,2,2,0),1,'This adds protein, but concentrating it late in the day is less supportive than distributing it across meals.'),
       opt('n4','Reduce lunch and dinner portions slightly to prevent weight gain, then add protein only after strength training begins.',effect(-2.8,-.1,-.2,-1.2,-12,-10,-15,-5,6),0,'A calorie reduction conflicts with the goal of restoring lean tissue and function.')
-    ]};
-  if(c.type==='safetyRestriction') return {
-    correct:'n1',feedback:'The immediate nutrition priority is regular eating and coordinated care, not continued control of weight loss.',
-    options:[
-      opt('n1','Restore regular meals and snacks, include previously restricted food groups, and coordinate the eating plan with qualified professionals.',effect(1.8,.1,1.1,.7,24,22,25,18,-20),2,'This plan addresses energy deficiency, rigid restriction, and the need for professional support.'),
-      opt('n2','Add breakfast and a recovery snack, reduce exercise, and use this as a bridge while prompt medical and behavioral-health care is arranged.',effect(1.1,.1,.7,.4,15,15,14,10,-12),1,'This is a useful immediate step, but it may not be enough to reverse the broader restrictive pattern without a full regular-eating plan.'),
-      opt('n3','Keep the current food choices but increase portions on training days and remove the weekly weigh-in target.',effect(.4,0,.2,.1,6,5,2,2,-4),1,'Increasing intake and reducing monitoring are helpful, but the plan still preserves rigid food rules and exercise-linked eating.'),
-      opt('n4','Maintain the current deficit, add a multivitamin, and lower the weekly weight-loss target while symptoms are monitored.',effect(-3.8,-.3,-.8,-1.7,-20,-22,-25,-17,22),0,'A supplement and slower target do not make continued restriction safe.')
     ]};
   if(c.type==='underweight') return {
     correct:'n1',feedback:'The strongest plan addresses low appetite, chewing difficulty, energy needs, and evaluation together.',
@@ -837,14 +808,6 @@ function activityOptions(c){
       opt('a3','Reduce lifting from four to three days and add two moderate cardio sessions to support a small recomposition goal.',effect(-.6,-.3,-.4,.1,0,-1,2,5,0),1,'This could be workable, but reducing resistance volume may be less aligned with the client’s performance and lean-tissue goals.'),
       opt('a4','Add daily cardio while keeping four lifting days so total weekly expenditure is high enough to reach a BMI below 25.',effect(-1.8,-.5,-.6,-.7,-3,-14,-13,-4,7),0,'The extra volume is driven by a BMI target and may compromise recovery and lean tissue.')
     ]};
-  if(c.type==='safetyRestriction') return {
-    correct:'a1',feedback:'Compulsive exercise and physical warning signs require reduced training pressure and professional assessment.',
-    options:[
-      opt('a1','Pause extra workouts, use only gentle activity as advised, and include exercise behavior in the professional assessment.',effect(.2,0,.2,.1,4,20,18,15,-20),2,'This directly addresses both safety and the compulsive relationship with exercise.'),
-      opt('a2','Stop high-intensity sessions, schedule full rest days, and use short gentle walks while appointments are being arranged.',effect(.1,0,.1,.1,3,13,12,9,-12),1,'This is an appropriate immediate reduction, but it is less explicit about coordinated assessment of the exercise behavior.'),
-      opt('a3','Keep one familiar run several days per week, but stop all extra workouts and remove pace or calorie-burn targets.',effect(-.1,0,0,0,1,5,3,2,-4),1,'Reducing compulsive features helps, but continuing frequent running may still be unsafe before evaluation.'),
-      opt('a4','Replace some steady runs with shorter intervals so training time decreases while fitness and weight loss continue.',effect(-1.5,-.2,-.3,-.6,-7,-20,-18,-13,18),0,'Shorter intervals can still intensify training stress and preserve the unsafe weight-loss goal.')
-    ]};
   if(c.type==='underweight') return {
     correct:'a1',feedback:'Once medically appropriate, progressive resistance and balance work best support function without a large energy drain.',
     options:[
@@ -880,14 +843,6 @@ function recoveryOptions(c){
       opt('r3','Prioritize sleep and rest days while keeping the current post-training eating pattern unchanged.',effect(-.1,0,0,.1,1,10,7,4,0),1,'Sleep helps, but recovery remains incomplete if under-eating after training continues.'),
       opt('r4','Add training whenever body weight stalls, using caffeine and an extra rest day to maintain the weekly schedule.',effect(-.6,-.1,-.1,-.3,-4,-15,-14,-6,7),0,'This ties exercise volume to the scale and risks inadequate recovery.')
     ]};
-  if(c.type==='safetyRestriction') return {
-    correct:'r1',feedback:'Recovery requires reducing rigid monitoring and using social and professional support.',
-    options:[
-      opt('r1','Remove weigh-in and exercise-compensation rules, involve trusted support, and follow the coordinated professional care plan.',effect(.2,0,.2,.2,13,22,25,17,-18),2,'This addresses the behavior pattern, isolation risk, and need for ongoing care.'),
-      opt('r2','Limit weight checks, schedule meals with a support person, and remove exercise targets while appointments are pending.',effect(.1,0,.1,.1,9,14,16,10,-10),1,'This is a strong immediate support plan, but it is less complete than integrating it with the full care plan.'),
-      opt('r3','Prioritize eight hours of sleep and two rest days while keeping precise food tracking for reassurance.',effect(-.1,0,0,0,1,8,1,2,4),1,'Sleep and rest help, but precise tracking may reinforce the rigid control that is part of the problem.'),
-      opt('r4','Use detailed meal preparation and avoid social eating until symptoms improve so intake remains predictable.',effect(-.5,-.1,-.2,-.2,-9,-12,-22,-12,18),0,'Greater isolation and control are likely to worsen the behavioral warning signs.')
-    ]};
   if(c.type==='underweight') return {
     correct:'r1',feedback:'The strongest support plan makes food access easier and keeps evaluation and monitoring connected to the restoration goal.',
     options:[
@@ -908,14 +863,6 @@ function recoveryOptions(c){
 }
 
 function progressQuestion(c){
-  if(c.type==='safetyRestriction') return {
-    correct:'p1',feedback:'The progress update must be interpreted through the safety pattern rather than the direction of weight.',
-    options:[
-      qopt('p1','Stop weight-loss coaching, communicate the warning signs, and continue coordinated medical and eating-disorder care with a stabilization focus.',2,'This response addresses the full pattern and keeps the next step within an appropriate scope of care.'),
-      qopt('p2','Pause all structured training and restore regular meals while the client waits for the next professional appointment.',1,'This is an appropriate immediate step, but it is less complete than coordinated ongoing care and explicit termination of the weight-loss goal.'),
-      qopt('p3','Continue only low-intensity exercise and a smaller deficit if dizziness improves and weekly monitoring is available.',0,'Improvement in one symptom would not make continued intentional loss appropriate in this pattern.'),
-      qopt('p4','Maintain the revised plan for two more weeks because the lower scale weight may improve motivation and reduce anxiety.',0,'The scale result does not outweigh the behavioral and physical warning signs.')
-    ]};
   if(c.type==='underweight') return {
     correct:'p1',feedback:'The next step should integrate evaluation, restoration, and function rather than react negatively to appropriate weight gain.',
     options:[
@@ -1150,7 +1097,7 @@ function buildReport(){
 }
 
 function caseTypeLabel(type){
-  const labels={athlete:'Muscular BMI limitation',normalHighFat:'Normal BMI with higher body fat',fatLoss:'Central-risk fat loss',olderLean:'Age-related lean-tissue loss',centralRisk:'Waist-related risk',safetyRestriction:'Restriction and exercise warning signs',underweight:'Unintentional underweight',maintenanceStress:'Weight-maintenance prevention'};
+  const labels={athlete:'Muscular BMI limitation',normalHighFat:'Normal BMI with higher body fat',fatLoss:'Central-risk fat loss',olderLean:'Age-related lean-tissue loss',centralRisk:'Waist-related risk',underweight:'Unintentional underweight',maintenanceStress:'Weight-maintenance prevention'};
   return labels[type];
 }
 
