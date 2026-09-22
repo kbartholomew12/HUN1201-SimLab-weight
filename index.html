@@ -276,6 +276,13 @@
   }
   textarea{min-height:180px;resize:vertical}
   input[type="text"]{min-height:46px}
+
+  /* Print-only mirror for long student responses.
+     Some browsers print only the visible scroll area of a textarea.
+     The mirror is normal document text and can expand across PDF pages. */
+  .print-answer{
+    display:none;
+  }
   .response-block{margin-top:1.2rem}
   .word-ok{color:var(--good);font-weight:800}
   .word-watch{color:var(--danger);font-weight:800}
@@ -310,13 +317,62 @@
     body.printing #reportScreen,
     body.printing #reflectionScreen{display:block!important}
     .container{max-width:none;margin:0;padding:0}
-    .panel{box-shadow:none;border:1px solid #999;break-inside:avoid;margin:.35rem 0;padding:.7rem}
+
+    /* Allow long sections to continue naturally onto another PDF page. */
+    .panel{
+      box-shadow:none;
+      border:1px solid #999;
+      break-inside:auto;
+      page-break-inside:auto;
+      margin:.35rem 0;
+      padding:.7rem;
+    }
+
     .profile-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:.35rem}
     .report-grid,.update-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:.4rem}
     .indicator-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:.35rem}
-    .timeline-item{break-inside:avoid}
+
+    /* Keep smaller report elements together where practical. */
+    .profile-item,
+    .metric-card,
+    .score-card,
+    .meter-card,
+    .timeline-item,
+    .notice,
+    .safety-note,
+    tr{
+      break-inside:avoid;
+      page-break-inside:avoid;
+    }
+
     #reflectionScreen{break-before:page;page-break-before:always}
-    textarea{border:1px solid #777;min-height:130px}
+
+    /* Hide the actual textarea in print because browser print engines may
+       clip it to the visible box instead of printing all entered text. */
+    textarea.print-source{
+      display:none!important;
+    }
+
+    /* Print the full student response as ordinary flowing text. */
+    .print-answer{
+      display:block!important;
+      width:100%;
+      min-height:130px;
+      margin-top:.45rem;
+      padding:.75rem;
+      border:1px solid #777;
+      border-radius:10px;
+      background:#fff;
+      white-space:pre-wrap;
+      overflow-wrap:anywhere;
+      word-break:break-word;
+      font:inherit;
+      line-height:1.5;
+      break-inside:auto;
+      page-break-inside:auto;
+    }
+
+    #countOne,#countTwo{display:none!important}
     table{font-size:9.5pt}
   }
 </style>
@@ -1107,6 +1163,29 @@ function updateWordCount(areaId,countId){
   $(countId).textContent=`${count} word${count===1?'':'s'}`;
   $(countId).className=count>=60?'small word-ok':'small';
 }
+
+function resizeTextarea(el){
+  el.style.height='auto';
+  el.style.height=`${Math.max(180,el.scrollHeight)}px`;
+}
+
+function preparePrintableAnswers(){
+  document.querySelectorAll('textarea').forEach((field,index)=>{
+    if(!field.id) field.id=`simlabTextarea${index+1}`;
+
+    field.classList.add('print-source');
+
+    let mirror=document.querySelector(`.print-answer[data-print-for="${field.id}"]`);
+    if(!mirror){
+      mirror=document.createElement('div');
+      mirror.className='print-answer';
+      mirror.setAttribute('data-print-for',field.id);
+      field.insertAdjacentElement('afterend',mirror);
+    }
+
+    mirror.textContent=field.value.trim()||'No response entered.';
+  });
+}
 function validateResponses(){
   const nameOk=$('studentName').value.trim().length>=2;
   const count1=$('responseOne').value.trim()?$('responseOne').value.trim().split(/\s+/).length:0;
@@ -1131,16 +1210,32 @@ $('nextBtn').addEventListener('click',()=>{
 });
 $('continueReflectionBtn').addEventListener('click',()=>showScreen('reflectionScreen'));
 $('backReportBtn').addEventListener('click',()=>showScreen('reportScreen'));
-$('responseOne').addEventListener('input',()=>updateWordCount('responseOne','countOne'));
-$('responseTwo').addEventListener('input',()=>updateWordCount('responseTwo','countTwo'));
+$('responseOne').addEventListener('input',()=>{
+  updateWordCount('responseOne','countOne');
+  resizeTextarea($('responseOne'));
+});
+$('responseTwo').addEventListener('input',()=>{
+  updateWordCount('responseTwo','countTwo');
+  resizeTextarea($('responseTwo'));
+});
 $('printBtn').addEventListener('click',()=>{
   if(!validateResponses()) return;
   const name=$('studentName').value.trim();
   const nameCard=document.querySelector('#reportProfile .profile-item:first-child .value');
   if(nameCard) nameCard.textContent=name;
+
+  document.querySelectorAll('textarea').forEach(resizeTextarea);
+  preparePrintableAnswers();
   document.body.classList.add('printing');
   window.print();
 });
+
+/* Also catches Ctrl+P / browser Print so long responses are preserved. */
+window.addEventListener('beforeprint',()=>{
+  document.querySelectorAll('textarea').forEach(resizeTextarea);
+  preparePrintableAnswers();
+});
+
 window.addEventListener('afterprint',()=>document.body.classList.remove('printing'));
 $('restartBtn').addEventListener('click',()=>{currentCase=null;randomCase();showScreen('caseScreen')});
 </script>
